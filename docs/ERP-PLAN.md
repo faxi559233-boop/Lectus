@@ -25,7 +25,7 @@ Rules: no cross-department reads for HOD; teachers cannot read other teachers' o
 | 2 | Auth, roles, sessions, audit log | 1 | ✅ |
 | 3 | Academic structure: departments, programs, terms, sections, courses, offerings, enrollments | 1 | ✅ |
 | 4 | Attendance online + idempotent offline sync | 1 | ✅ |
-| 5 | Student portal (own attendance, outlook) | 1 | ✅ |
+| 5 | Web portal UI: student, teacher, HOD, admin (EN/اردو, offline queue) — browser e2e `tests/portal-e2e.js` passes | 1 | ✅ |
 | 6 | Code check-in (rotating 6-digit code, optional geofence) | 1 | ✅ |
 | 7 | HOD dashboard, shortage lists, CSV export | 1 | ✅ |
 | 8 | Bulk import (students/teachers) CSV/XLSX | 1 | ✅ |

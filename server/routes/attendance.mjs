@@ -12,7 +12,7 @@ export const codeFor = (secret, bucket) => String(createHmac('sha256', secret).u
 export default function (r, db) {
   r.get('/api/my/offerings', VIEW, ctx => {
     const u = ctx.user; const where = u.role === 'teacher' ? 'o.teacher_id=?' : u.role === 'hod' ? 'c.dept_id=?' : '1=1'; const args = u.role === 'admin' ? [] : [u.role === 'teacher' ? u.id : u.dept_id];
-    return db.prepare(`SELECT o.id, o.room, o.days, o.start_time, o.min_pct, c.code AS course_code, c.name AS course_name, sec.name AS section_name, p.code AS program_code, t.name AS teacher_name,
+    return db.prepare(`SELECT o.id, o.section_id, o.room, o.days, o.start_time, o.min_pct, c.code AS course_code, c.name AS course_name, sec.name AS section_name, p.code AS program_code, t.name AS teacher_name,
         (SELECT COUNT(*) FROM enrollments e WHERE e.offering_id=o.id) AS enrolled, (SELECT COUNT(*) FROM lecture_sessions s WHERE s.offering_id=o.id) AS lectures,
         (SELECT MAX(date) FROM lecture_sessions s WHERE s.offering_id=o.id) AS last_date
       FROM offerings o JOIN courses c ON c.id=o.course_id JOIN sections sec ON sec.id=o.section_id JOIN programs p ON p.id=sec.program_id LEFT JOIN users t ON t.id=o.teacher_id

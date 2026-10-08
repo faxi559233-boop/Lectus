@@ -53,3 +53,7 @@ Pushing to `main` deploys to GitHub Pages via `.github/workflows/pages.yml`
 (repo → Settings → Pages → Source: *GitHub Actions*).
 
 > Data lives only in the browser of the phone that took attendance. Use *Settings → Data & backup → Download backup* regularly.
+
+## ERP portal (server + web UI)
+`server/` (Node 22 + SQLite API, 30 tests), `portal/` (web UI for students, teachers, HODs, admins), `deploy/` (VPS installer). Plan: `docs/ERP-PLAN.md`, capacity: `docs/SCALING.md`, deployment: `deploy/README.md`.
+Browser test: start the server with a seeded demo DB, then `node tests/portal-e2e.js`.
