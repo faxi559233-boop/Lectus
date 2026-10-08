@@ -1,0 +1,13 @@
+{
+  "name": "gmc-server",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22.5" },
+  "scripts": {
+    "start": "node --no-warnings index.mjs",
+    "test": "node --no-warnings --test test/*.test.mjs",
+    "cli": "node --no-warnings cli.mjs"
+  },
+  "dependencies": { "web-push": "^3.6.7" }
+}
