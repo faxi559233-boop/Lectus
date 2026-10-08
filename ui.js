@@ -22,13 +22,15 @@ function h(tag, attrs, ...kids) {
 }
 
 /* ---------- toast ---------- */
-function toast(msg, type = 'success') {
+function toast(msg, type = 'success', action) {
   let box = document.getElementById('toasts');
   if (!box) { box = h('div', { id: 'toasts', role: 'status', 'aria-live': 'polite' }); document.body.append(box); }
-  const el = h('div', { class: 'toast ' + type }, icon(type === 'error' ? 'alert' : type === 'info' ? 'info' : 'check', 18), h('span', {}, msg));
+  const close = () => { el.classList.remove('in'); setTimeout(() => el.remove(), 250); };
+  const el = h('div', { class: 'toast ' + type }, icon(type === 'error' ? 'alert' : type === 'info' ? 'info' : 'check', 18), h('span', {}, msg),
+    action ? h('button', { class: 'toast-action', onclick: () => { close(); action.fn(); } }, action.label) : null);
   box.append(el);
   requestAnimationFrame(() => el.classList.add('in'));
-  setTimeout(() => { el.classList.remove('in'); setTimeout(() => el.remove(), 250); }, type === 'error' ? 4500 : 2600);
+  setTimeout(close, action ? 7000 : type === 'error' ? 4500 : 2600);
 }
 
 /* ---------- buttons ---------- */
@@ -65,9 +67,23 @@ function formDialog({ title, desc, fields, submit, onSubmit, extra, wide }) {
   const d = openDialog(wide ? 'wide' : '');
   const inputs = {}, errEls = {};
   const form = h('form', { novalidate: true });
+  const real = fields.filter(f => !f.custom);
   fields.forEach(f => {
+    if (f.custom) { form.append(f.node); return; }
     let el;
     const common = { id: 'f-' + f.key, name: f.key, placeholder: f.placeholder, 'aria-describedby': 'e-' + f.key, class: 'input' };
+    if (f.type === 'days') {
+      el = h('input', Object.assign({ type: 'hidden', value: f.value || '' }, { id: common.id }));
+      const set = new Set(String(f.value || '').split(',').filter(Boolean));
+      const wrap = h('div', { class: 'daypick', role: 'group', 'aria-label': f.label }, [1, 2, 3, 4, 5, 6, 0].map(d => {
+        const b = h('button', { type: 'button', class: 'daychip' + (set.has(String(d)) ? ' on' : ''), 'aria-pressed': String(set.has(String(d))),
+          onclick: () => { set.has(String(d)) ? set.delete(String(d)) : set.add(String(d)); b.classList.toggle('on'); b.setAttribute('aria-pressed', String(set.has(String(d)))); el.value = [...set].join(','); } }, weekdayShort(d));
+        return b;
+      }));
+      inputs[f.key] = el; errEls[f.key] = h('p', { class: 'field-error', id: 'e-' + f.key });
+      form.append(h('div', { class: 'field' }, h('label', {}, f.label), wrap, f.help ? h('p', { class: 'help' }, f.help) : null, el));
+      return;
+    }
     if (f.type === 'select') el = h('select', common, f.options.map(o => h('option', { value: o.value, selected: String(o.value) === String(f.value) }, o.label)));
     else if (f.type === 'textarea') el = h('textarea', Object.assign({ rows: f.rows || 6 }, common), f.value || '');
     else el = h('input', Object.assign({ type: f.type || 'text', value: f.value ?? '', min: f.min, max: f.max, inputmode: f.inputmode, autocomplete: 'off' }, common));
@@ -83,11 +99,11 @@ function formDialog({ title, desc, fields, submit, onSubmit, extra, wide }) {
   form.addEventListener('submit', e => {
     e.preventDefault();
     const vals = {}, errs = {};
-    fields.forEach(f => { vals[f.key] = (inputs[f.key].value || '').trim(); if (f.required && !vals[f.key]) errs[f.key] = t('errRequired'); });
+    real.forEach(f => { vals[f.key] = (inputs[f.key].value || '').trim(); if (f.required && !vals[f.key]) errs[f.key] = t('errRequired'); });
     const more = Object.keys(errs).length ? null : onSubmit(vals);
     Object.assign(errs, more || {});
-    fields.forEach(f => { errEls[f.key].textContent = errs[f.key] || ''; inputs[f.key].setAttribute('aria-invalid', errs[f.key] ? 'true' : 'false'); });
-    const first = fields.find(f => errs[f.key]);
+    real.forEach(f => { errEls[f.key].textContent = errs[f.key] || ''; inputs[f.key].setAttribute('aria-invalid', errs[f.key] ? 'true' : 'false'); });
+    const first = real.find(f => errs[f.key]);
     if (first) inputs[first.key].focus(); else d.close();
   });
   modalShell(d, title, desc, form, [extra ? extra(d) : null, h('span', { class: 'grow' }), btn(t('cancel'), { v: 'ghost', onclick: () => d.close() }), submitEl].filter(Boolean));
@@ -203,12 +219,27 @@ function lineChart(points, minLine) {
   return h('div', { class: 'chart', role: 'img', 'aria-label': t('trendChart'), html: `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet">${grid}${minL}${area}${line}${dots}${labels}</svg>` });
 }
 
-function distributionBar(P, A, L) {
-  const total = P + A + L;
+function distributionBar(P, A, L, T = 0) {
+  const total = P + A + L + T;
   const seg = (n, cls) => (n ? h('i', { class: cls, style: `width:${(n / total) * 100}%`, title: String(n) }) : null);
   return h('div', {},
-    h('div', { class: 'dist', role: 'img', 'aria-label': t('distribution') }, total ? [seg(P, 'p'), seg(L, 'l'), seg(A, 'a')] : h('i', { class: 'none', style: 'width:100%' })),
+    h('div', { class: 'dist', role: 'img', 'aria-label': t('distribution') }, total ? [seg(P, 'p'), seg(T, 't'), seg(L, 'l'), seg(A, 'a')] : h('i', { class: 'none', style: 'width:100%' })),
     h('ul', { class: 'legend' },
-      [['p', t('present'), P], ['a', t('absent'), A], ['l', t('leave'), L]].map(([c, l, n]) =>
+      [['p', t('present'), P], ['t', t('late'), T], ['a', t('absent'), A], ['l', t('leave'), L]].map(([c, l, n]) =>
         h('li', {}, h('span', { class: 'dot ' + c }), h('span', {}, l), h('b', {}, num(n), total ? h('em', {}, ` ${num(Math.round((n / total) * 100))}%`) : null)))));
+}
+
+/* Calendar heatmap: last `weeks` weeks, Monday-first columns. cells: {'YYYY-MM-DD': {cls, title}} */
+function heatmap(cells, legend, weeks = 16) {
+  const end = new Date(); end.setHours(0, 0, 0, 0);
+  const dow = (end.getDay() + 6) % 7; // Monday=0
+  const start = new Date(end); start.setDate(end.getDate() - dow - (weeks - 1) * 7);
+  const iso = d => { const x = new Date(d); x.setMinutes(x.getMinutes() - x.getTimezoneOffset()); return x.toISOString().slice(0, 10); };
+  const grid = h('div', { class: 'heat', role: 'img', 'aria-label': t('calendar') });
+  for (let i = 0; i < weeks * 7; i++) {
+    const d = new Date(start); d.setDate(start.getDate() + i);
+    const key = iso(d), c = cells[key], future = d > end;
+    grid.append(h('i', { class: 'hc ' + (future ? 'future' : c ? c.cls : ''), title: key + (c ? ' · ' + c.title : '') }));
+  }
+  return h('div', {}, grid, h('ul', { class: 'legend row' }, legend.map(([cls, label]) => h('li', {}, h('span', { class: 'dot hc ' + cls }), h('span', {}, label)))));
 }
