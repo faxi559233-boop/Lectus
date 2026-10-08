@@ -451,3 +451,5 @@ img.logo { object-fit: cover; background: var(--surface-2); border: 1px solid va
 
 .mobile-title { display: none; font-size: 16px; letter-spacing: -.01em; }
 @media (max-width: 767px) { .mobile-title { display: block; } }
+
+.empty h2 { font-size: 16px; margin-bottom: 4px; }

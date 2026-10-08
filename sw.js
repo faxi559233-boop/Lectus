@@ -1,4 +1,4 @@
-const CACHE = 'lectus-v6';
+const CACHE = 'lectus-v7';
 const FILES = ['./', 'index.html', 'styles.css', 'app.js', 'ui.js', 'icons.js', 'xlsx.js', 'i18n.js', 'manifest.webmanifest', 'icons/logo.jpg', 'icons/favicon.png', 'icons/icon-192.png'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting()));

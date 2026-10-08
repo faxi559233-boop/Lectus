@@ -33,6 +33,9 @@ Dashboard · Students · Attendance (subjects → mark → history) · Semesters
 | `i18n.js` | English + Urdu strings |
 | `sw.js`, `manifest.webmanifest` | Offline PWA |
 
+## Scaling
+See [docs/SCALING.md](docs/SCALING.md) — measured capacity for 30,000 students on a single core (`bench/`).
+
 ## Tests
 ```
 npm i playwright            # once

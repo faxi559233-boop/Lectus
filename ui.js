@@ -141,7 +141,7 @@ function avatar(name, size) {
 function emptyState({ iconName, title, desc, actions, compact }) {
   return h('div', { class: 'empty' + (compact ? ' compact' : '') },
     h('div', { class: 'empty-ic' }, icon(iconName || 'info', 22)),
-    h('h3', {}, title), desc ? h('p', {}, desc) : null,
+    h(compact ? 'h3' : 'h2', {}, title), desc ? h('p', {}, desc) : null,
     actions ? h('div', { class: 'empty-actions' }, actions) : null);
 }
 

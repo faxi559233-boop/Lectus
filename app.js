@@ -794,6 +794,7 @@ function applyPrefs() {
   document.documentElement.lang = lang();
   document.documentElement.dir = lang() === 'ur' ? 'rtl' : 'ltr';
   document.documentElement.dataset.theme = S.settings.theme;
+  if (lang() === 'ur' && !document.getElementById('urdu-font')) document.head.append(h('link', { id: 'urdu-font', rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap' }));
 }
 
 function recoveryScreen() {
