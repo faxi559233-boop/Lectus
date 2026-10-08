@@ -12,7 +12,7 @@ const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(
 const today = () => { const d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 10); };
 
 function defaults() {
-  return { v: 2, settings: { lang: 'en', theme: 'auto', min: 75, warn: 80, leaveCounts: true, lastBackup: null, teacher: '', institution: '', sidebar: 'open' }, semesters: [], current: null };
+  return { v: 2, settings: { lang: 'en', theme: 'light', min: 75, warn: 80, leaveCounts: true, lastBackup: null, teacher: '', institution: '', sidebar: 'open' }, semesters: [], current: null };
 }
 let loadError = null;
 function migrate(d) {
