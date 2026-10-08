@@ -1,0 +1,50 @@
+# GMC Check-in — Caddy site. {$GMC_DOMAIN} comes from /etc/gmc/caddy.env (e.g. check.college.edu.pk)
+{$GMC_DOMAIN} {
+	encode zstd gzip
+
+	# API: everything under /api goes to the Node server (it adds its own security headers)
+	handle /api/* {
+		reverse_proxy 127.0.0.1:8787 {
+			# Caddy overwrites X-Forwarded-For with the real client address (untrusted by default), the app reads it when GMC_TRUST_PROXY=1
+			transport http {
+				keepalive 60s
+				keepalive_idle_conns 256
+			}
+		}
+	}
+
+	# Static front-end (allow-listed copy built by deploy/build-public.sh — server code is never under this root)
+	handle {
+		root * /var/www/gmc
+		header {
+			Strict-Transport-Security "max-age=31536000"
+			X-Content-Type-Options "nosniff"
+			X-Frame-Options "DENY"
+			Referrer-Policy "same-origin"
+			Cross-Origin-Opener-Policy "same-origin"
+			Permissions-Policy "camera=(), microphone=(), geolocation=(self)"
+			Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; manifest-src 'self'; worker-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'"
+			-Server
+		}
+		@mutable path / /index.html /sw.js /manifest.webmanifest /portal /portal/ /portal/index.html /portal/sw.js
+		header @mutable Cache-Control "no-cache"
+		@assets path /icons/* *.css *.js
+		header @assets Cache-Control "public, max-age=3600"
+		try_files {path} {path}/index.html
+		file_server
+	}
+
+	log {
+		output file /var/log/caddy/gmc-access.log {
+			roll_size 20mb
+			roll_keep 5
+		}
+		format filter {
+			wrap json
+			fields {
+				request>headers>Cookie delete
+				request>headers>Authorization delete
+			}
+		}
+	}
+}

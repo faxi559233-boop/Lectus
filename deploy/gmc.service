@@ -1,0 +1,28 @@
+[Unit]
+Description=GMC Check-in server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=gmc
+Group=gmc
+WorkingDirectory=/opt/gmc/server
+EnvironmentFile=/etc/gmc/gmc.env
+ExecStart=/usr/bin/node --no-warnings /opt/gmc/server/index.mjs
+Restart=always
+RestartSec=2
+LimitNOFILE=65535
+# hardening
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+ReadWritePaths=/var/lib/gmc /var/backups/gmc
+StateDirectory=gmc
+
+[Install]
+WantedBy=multi-user.target
