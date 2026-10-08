@@ -1,5 +1,5 @@
-const CACHE = 'lectus-v1';
-const FILES = ['./', 'index.html', 'styles.css', 'app.js', 'i18n.js', 'manifest.webmanifest', 'icons/icon.svg'];
+const CACHE = 'lectus-v2';
+const FILES = ['./', 'index.html', 'styles.css', 'app.js', 'ui.js', 'icons.js', 'i18n.js', 'manifest.webmanifest', 'icons/icon.svg'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting()));
 });

@@ -1,23 +1,35 @@
 # Lectus Attendance
 
-Offline class-attendance app (English / اردو). Installable on any phone from the browser — **no Play Store / App Store needed**.
+Offline class-attendance manager (English / اردو). Installable from the browser — **no Play Store / App Store needed**.
 
-## Features
-- Semesters → subjects (6-7 each) → 50+ students
-- Fast attendance: tap P / A / L, "All present", search, date, edit past lectures
-- Per-student % per subject, shortage list (min % and warning % are configurable in Settings)
-- Share with the teacher: PDF register (print → Save as PDF), Excel/CSV, WhatsApp text
-- Works fully offline; data stored on the phone. Backup / restore as a JSON file
-- Light / dark / auto theme, RTL Urdu UI
+## Screens
+Dashboard · Students · Attendance (subjects → mark → history) · Semesters · Reports · Settings
+
+- Desktop: collapsible sidebar. Tablet: icon rail. Mobile: bottom navigation with a "More" sheet.
+- Light / dark / system theme, full RTL layout for Urdu.
+- Keyboard-friendly marking: focus a row, press **P / A / L**, use **↑ ↓** to move.
+- Shortage tracking with configurable minimum % and warning % (Settings → Academic).
+- Export: CSV (Excel), printable PDF register, WhatsApp / share text.
+- Backup & restore as a JSON file. All data stays on the device (`localStorage`).
+
+## Project layout (no build step)
+| File | Purpose |
+|---|---|
+| `index.html` | App shell + loading skeleton |
+| `styles.css` | Design tokens + all components (light/dark, responsive) |
+| `icons.js` | Inline SVG icon set (works offline) |
+| `ui.js` | Reusable primitives: buttons, modals, forms, tables, badges, charts, toasts |
+| `app.js` | State, hash router, pages, exports |
+| `i18n.js` | English + Urdu strings |
+| `sw.js`, `manifest.webmanifest` | Offline PWA |
 
 ## Run locally
 ```
-python3 -m http.server 8000   # then open http://localhost:8000
+python3 -m http.server 8000   # open http://localhost:8000
 ```
 
-## Put it online (free) so everyone can open a link
-GitHub → repo **Settings → Pages → Deploy from branch → `main` / root**. Share the resulting
-`https://<user>.github.io/Lectus/` link. On the phone open it in Chrome / Safari →
-menu → **Add to Home Screen**. It then works offline like a normal app.
+## Deploy
+Pushing to `main` deploys to GitHub Pages via `.github/workflows/pages.yml`
+(repo → Settings → Pages → Source: *GitHub Actions*).
 
-> Data lives only in the browser of the phone that took attendance. Use *Settings → Download backup* regularly.
+> Data lives only in the browser of the phone that took attendance. Use *Settings → Data & backup → Download backup* regularly.
