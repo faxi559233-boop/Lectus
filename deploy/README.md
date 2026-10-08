@@ -64,3 +64,10 @@ All lines should say OK (health, login required, server code not exposed, HTTPS 
 - [ ] Monthly restore drill done and recorded.
 
 *Not verified on a real VPS by the author:* the apt/NodeSource/Caddy repository steps and the systemd unit were written from the vendors' documented procedures but could only be syntax-checked and dry-run in the build sandbox. Run `verify.sh` and tell me what fails.
+
+## No domain yet? Use a free hostname
+HTTPS (needed for the portal's service worker, install-to-home-screen and push) requires a hostname, not a bare IP. Until you buy a domain, use a free wildcard-DNS name that points at your IP, e.g. for IP `203.0.113.7`:
+
+    sudo bash deploy/install.sh 203-0-113-7.sslip.io you@example.com
+
+Caddy gets a real certificate for it automatically. When you buy a domain later: add the A record, then re-run `install.sh` with the new hostname (data and users are kept). Students must be told the new link then, so for the pilot prefer to buy the domain before sharing the link widely.

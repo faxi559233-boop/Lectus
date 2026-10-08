@@ -86,7 +86,7 @@ function loginView() {
     catch (ex) { err.textContent = ex.message; sub.disabled = false; pw.value = ''; pw.focus(); }
   } },
     h('div', { class: 'field' }, h('label', { for: 'login-id' }, t('loginId')), id), h('div', { class: 'field' }, h('label', { for: 'login-pw' }, t('password')), pw), err, h('p', { class: 'help', style: 'margin-bottom:12px' }, t('loginHint')), sub);
-  return h('div', { class: 'login-wrap' }, h('div', { class: 'card login-card' }, h('div', { class: 'brandrow' }, h('img', { class: 'logo', src: '/icons/logo.jpg', alt: '' }), h('div', {}, h('h1', {}, t('pTitle')), h('p', { class: 'sub' }, t('signIn')))), form,
+  return h('main', { class: 'login-wrap' }, h('div', { class: 'card login-card' }, h('div', { class: 'brandrow' }, h('img', { class: 'logo', src: '/icons/logo.jpg', alt: '' }), h('div', {}, h('h1', {}, t('pTitle')), h('p', { class: 'sub' }, t('signIn')))), form,
     h('div', { class: 'pill-row', style: 'margin-top:14px;justify-content:center' }, ...[['en', 'English'], ['ur', 'اردو']].map(([c, l]) => btn(l, { v: P.lang === c ? 'secondary' : 'ghost', size: 'sm', onclick: () => { P.lang = c; try { localStorage.setItem('gmc-lang', c); } catch { /* ignore */ } render(); } })))));
 }
 function changePwView() {
@@ -100,7 +100,7 @@ function changePwView() {
     try { await apiPatient('POST', '/api/auth/change-password', { current: cur.value, new: n1.value }); P.user.must_change = false; toast(t('saved')); location.hash = '#' + HOME[P.user.role]; render(); }
     catch (ex) { err.textContent = ex.message; sub.disabled = false; }
   } }, h('div', { class: 'field' }, h('label', { for: 'cp-cur' }, t('currentPw')), cur), h('div', { class: 'field' }, h('label', { for: 'cp-n1' }, t('newPw')), n1), h('div', { class: 'field' }, h('label', { for: 'cp-n2' }, t('confirmPw')), n2), err, sub);
-  return h('div', { class: 'login-wrap' }, h('div', { class: 'card login-card' }, h('h1', {}, t('mustChangeTitle')), h('p', { class: 'sub', style: 'margin:6px 0 16px' }, t('mustChangeDesc')), form,
+  return h('main', { class: 'login-wrap' }, h('div', { class: 'card login-card' }, h('h1', {}, t('mustChangeTitle')), h('p', { class: 'sub', style: 'margin:6px 0 16px' }, t('mustChangeDesc')), form,
     h('div', { style: 'margin-top:12px;text-align:center' }, btn(t('signOut'), { v: 'ghost', size: 'sm', onclick: async () => { try { await api('POST', '/api/auth/logout', {}); } catch { /* ignore */ } P.user = null; render(); } }))));
 }
 

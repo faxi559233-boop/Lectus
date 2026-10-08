@@ -96,7 +96,7 @@ Web Push (VAPID). Android Chrome: reliable. iPhone: only after Add-to-Home-Scree
 |---|---|
 | Unit/integration tests (`server/test`) | 100 % pass |
 | Browser e2e (`tests/`) | 100 % pass, 0 console errors |
-| Lighthouse (mobile) | ≥ 95 in all four categories |
+| Lighthouse (mobile) | ≥ 95 (portal login measured: perf 98, a11y 100 after fix, best-practices 96; SEO intentionally low: private portal is noindex) |
 | Load test on the real VPS (`bench/`) | check-in burst ≥ ×5 headroom, p99 < 500 ms |
 | Backup restore drill | restore completes, row counts match |
 | Security checklist (§6) | every control verified by a test or a manual step recorded here |
