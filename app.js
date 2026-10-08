@@ -1,4 +1,4 @@
-/* GMC Attendance — state, routing and pages. Data model is backward compatible with v1 (storage key preserved). */
+/* GMC Check-in — state, routing and pages. Data model is backward compatible with v1 (storage key preserved). */
 'use strict';
 
 const KEY = 'lectus-data-v1';
@@ -168,7 +168,7 @@ function sidebar(active) {
   const collapsed = isCollapsed();
   const name = S.settings.teacher || t('teacherDefault');
   return h('aside', { class: 'sidebar', 'aria-label': 'Primary' },
-    h('a', { class: 'brand', href: href('dashboard'), 'aria-label': 'GMC Attendance' }, h('span', { class: 'logo' }, icon('check', 18)), h('span', { class: 'brand-name' }, 'GMC Attendance')),
+    h('a', { class: 'brand', href: href('dashboard'), 'aria-label': 'GMC Check-in' }, h('img', { class: 'logo', src: 'icons/logo.jpg', alt: '', width: 32, height: 32 }), h('span', { class: 'brand-name' }, 'GMC Check-in')),
     h('nav', { class: 'nav' }, NAV.map(([r, ic, key]) => h('a', { href: href(r), class: 'nav-item' + (active === r ? ' active' : ''), title: collapsed ? t(key) : null, 'aria-current': active === r ? 'page' : null }, icon(ic, 19), h('span', { class: 'nav-label' }, t(key))))),
     h('div', { class: 'sidebar-foot' },
       h('button', { class: 'nav-item collapse-btn', onclick: () => { S.settings.sidebar = S.settings.sidebar === 'collapsed' ? 'open' : 'collapsed'; save(); render(); }, 'aria-label': t('toggleSidebar') }, icon('panel', 19, 'flip'), h('span', { class: 'nav-label' }, t('collapse'))),
@@ -181,8 +181,8 @@ function topbar() {
     h('select', { 'aria-label': t('semester'), onchange: e => { S.current = e.target.value; save(); draft = null; render(); } },
       live.map(s => h('option', { value: s.id, selected: s.id === S.current }, s.name)))) : null;
   return h('header', { class: 'topbar' },
-    h('a', { class: 'brand mobile-brand', href: href('dashboard'), 'aria-label': 'GMC Attendance' }, h('span', { class: 'logo' }, icon('check', 18))),
-    sw,
+    h('a', { class: 'brand mobile-brand', href: href('dashboard'), 'aria-label': 'GMC Check-in' }, h('img', { class: 'logo', src: 'icons/logo.jpg', alt: '', width: 32, height: 32 })),
+    sw || h('b', { class: 'mobile-title' }, 'GMC Check-in'),
     h('span', { class: 'grow' }),
     h('form', { class: 'top-search', role: 'search', onsubmit: e => { e.preventDefault(); const v = e.target.q.value.trim(); go('students' + (v ? '?q=' + encodeURIComponent(v) : '')); } },
       icon('search', 16), h('input', { name: 'q', class: 'input', type: 'search', placeholder: t('searchStudents'), 'aria-label': t('searchStudents') })),
@@ -745,7 +745,7 @@ async function shareBackup() {
   const name = `gmc-backup-${today()}.json`; const json = JSON.stringify(S);
   try {
     const file = new File([json], name, { type: 'application/json' });
-    if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], title: 'GMC Attendance backup' }); render(); return; }
+    if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], title: 'GMC Check-in backup' }); render(); return; }
   } catch (e) { if (e && e.name === 'AbortError') return; }
   download(name, json, 'application/json'); toast(t('toastBackup')); render();
 }
@@ -777,7 +777,7 @@ function pageSettings() {
         h('input', { type: 'file', id: 'restore', accept: '.json', hidden: true, onchange: e => { const f = e.target.files[0]; if (!f) return;
           f.text().then(tx => { try { const d = JSON.parse(tx); if (!Array.isArray(d.semesters)) throw 0; confirmDialog({ title: t('restoreBackup'), desc: t('confirmRestore'), confirm: t('restore'), danger: false, onConfirm: () => { loadError = null; S = migrate(d); save(); render(); toast(t('toastRestored')); } }); } catch (_) { toast(t('badFile'), 'error'); } }); } })]),
       row(t('resetAll'), t('resetAllDesc'), btn(t('reset'), { v: 'danger-ghost', icon: 'trash', onclick: () => confirmDialog({ title: t('resetAll'), desc: t('confirmReset'), confirm: t('reset'), onConfirm: () => { loadError = null; S = defaults(); save(); draft = null; go('dashboard'); render(); toast(t('toastReset')); } }) }))],
-    about: () => [h('h2', {}, t('setAbout')), row('GMC Attendance', `${t('version')} ${VERSION}`, badge('neutral', 'v' + VERSION)),
+    about: () => [h('h2', {}, t('setAbout')), row('GMC Check-in', `${t('version')} ${VERSION}`, badge('neutral', 'v' + VERSION)),
       row(t('install'), t('installHint'), icon('phone', 20)), row(t('privacy'), t('privacyDesc'), icon('database', 20))]
   };
   const tabs = [['general', 'building', 'setGeneral'], ['academic', 'target', 'setAcademic'], ['appearance', 'palette', 'setAppearance'], ['data', 'database', 'setData'], ['about', 'info', 'setAbout']];
@@ -820,7 +820,7 @@ function render() {
     }
     const keep = window.scrollY;
     app.replaceChildren(shell(page, TITLES[r.name] ? r.name : 'dashboard'));
-    document.title = (t(TITLES[r.name] || 'navDashboard')) + ' · GMC Attendance';
+    document.title = (t(TITLES[r.name] || 'navDashboard')) + ' · GMC Check-in';
     window.scrollTo(0, newPage ? 0 : keep); newPage = false;
   } catch (e) {
     console.error(e);

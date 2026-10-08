@@ -446,3 +446,8 @@ a.btn { text-decoration: none; }
 }
 
 .toast { pointer-events: auto; }
+
+img.logo { object-fit: cover; background: var(--surface-2); border: 1px solid var(--border); }
+
+.mobile-title { display: none; font-size: 16px; letter-spacing: -.01em; }
+@media (max-width: 767px) { .mobile-title { display: block; } }

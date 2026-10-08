@@ -1,4 +1,4 @@
-# GMC Attendance
+# GMC Check-in
 
 Offline class-attendance manager (English / اردو). Installable from the browser — **no Play Store / App Store needed**.
 

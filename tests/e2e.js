@@ -12,7 +12,7 @@ const fail=[]; const ok=(c,m)=>{ if(!c){fail.push(m);console.log('FAIL',m);} els
   p.on('pageerror',e=>errs.push('PAGEERR '+e.message)); p.on('console',m=>{ if(m.type()==='error'&&!/fonts\.g|ERR_|Failed to load resource/.test(m.text())) errs.push(m.text()); });
   await p.goto(B); await p.waitForSelector('.shell');
   await p.click('.content >> text=Create semester'); await p.fill('#f-name','BS ECO (5th Semester)'); await p.click('dialog .btn.primary'); await p.waitForSelector('dialog',{state:'detached'});
-  ok((await p.title()).includes('GMC Attendance'),'title ok');
+  ok((await p.title()).includes('GMC Check-in'),'title ok');
   ok(await p.locator('.start').count()===1,'getting-started checklist shown');
   // subjects with schedule incl. today
   const wd=await p.evaluate(()=>new Date().getDay());
