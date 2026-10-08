@@ -1,6 +1,6 @@
 {
-  "name": "Lectus Attendance",
-  "short_name": "Lectus",
+  "name": "GMC Attendance",
+  "short_name": "GMC",
   "description": "Class attendance tracker - offline, English / اردو",
   "start_url": "./index.html",
   "scope": "./",

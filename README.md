@@ -1,4 +1,4 @@
-# Lectus Attendance
+# GMC Attendance
 
 Offline class-attendance manager (English / اردو). Installable from the browser — **no Play Store / App Store needed**.
 

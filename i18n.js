@@ -46,15 +46,15 @@ const I18N = {
     teacherName: 'Your name', teacherNameDesc: 'Shown in the sidebar.', institution: 'Institution', institutionDesc: 'Printed on PDF registers.', institutionPh: 'University / department',
     language: 'Language', languageDesc: 'Interface language. Urdu switches the layout to right-to-left.', minAttendance: 'Minimum attendance %', minAttendanceDesc: 'Students below this are flagged as shortage.',
     warnAt: 'Warning threshold %', warnAtDesc: 'Students below this (but above the minimum) get a warning.', leaveCounts: 'Count leave as present', leaveCountsDesc: 'Approved leave will not reduce attendance.', manageSemDesc: 'Create, archive or delete semesters.',
-    theme: 'Theme', themeDesc: 'Choose how Lectus looks.', auto: 'System', light: 'Light', dark: 'Dark',
+    theme: 'Theme', themeDesc: 'Choose how GMC Attendance looks.', auto: 'System', light: 'Light', dark: 'Dark',
     backupHint: 'All data is stored only on this device. Download a backup regularly and send it to yourself (WhatsApp / email).', downloadBackup: 'Download backup', lastBackup: 'Last backup', restoreBackup: 'Restore from backup', restoreDesc: 'Replace current data with a backup file.',
-    confirmRestore: 'This replaces all current data with the backup file.', badFile: 'This file is not a valid Lectus backup.', resetAll: 'Reset all data', resetAllDesc: 'Permanently delete every semester, student and record.', confirmReset: 'This deletes everything on this device. Download a backup first if unsure.',
+    confirmRestore: 'This replaces all current data with the backup file.', badFile: 'This file is not a valid GMC Attendance backup.', resetAll: 'Reset all data', resetAllDesc: 'Permanently delete every semester, student and record.', confirmReset: 'This deletes everything on this device. Download a backup first if unsure.',
     version: 'Version', install: 'Install on your phone', installHint: 'Open your browser menu and choose “Add to Home Screen”. No app store needed.', privacy: 'Privacy', privacyDesc: 'Nothing is uploaded. Your data never leaves this device.',
     /* toasts & errors */
     toastSaved: 'Changes saved', toastDeleted: 'Deleted', toastSemCreated: 'Semester created', toastSubjectAdded: 'Subject added', toastStudentAdded: 'Student added', toastImported: 'students imported', toastAttSaved: 'Attendance saved',
     toastExported: 'File exported', toastBackup: 'Backup downloaded', toastRestored: 'Backup restored', toastReset: 'All data reset',
     errStorage: 'Unable to save changes. Storage may be full or blocked.', errGenericTitle: 'Something went wrong', errGenericDesc: 'This page could not be displayed. Please try again.',
-    errCorruptTitle: 'Saved data could not be read', errCorruptDesc: 'Your data was not changed and a copy was kept. Reload to try again, or start fresh (a restorable backup file is the safest option).', errBlockedTitle: 'Storage is blocked', errBlockedDesc: 'Your browser blocks local storage (private mode?). Open Lectus in a normal window.', startFresh: 'Start fresh'
+    errCorruptTitle: 'Saved data could not be read', errCorruptDesc: 'Your data was not changed and a copy was kept. Reload to try again, or start fresh (a restorable backup file is the safest option).', errBlockedTitle: 'Storage is blocked', errBlockedDesc: 'Your browser blocks local storage (private mode?). Open GMC Attendance in a normal window.', startFresh: 'Start fresh'
   },
   ur: {
     appTagline: 'حاضری مینیجر', teacherDefault: 'استاد', skip: 'مواد پر جائیں', collapse: 'سمیٹیں', toggleSidebar: 'سائیڈ بار',
@@ -95,13 +95,13 @@ const I18N = {
     teacherName: 'آپ کا نام', teacherNameDesc: 'سائیڈ بار میں نظر آئے گا۔', institution: 'ادارہ', institutionDesc: 'PDF رجسٹر پر چھپے گا۔', institutionPh: 'یونیورسٹی / شعبہ',
     language: 'زبان', languageDesc: 'انٹرفیس کی زبان۔ اردو میں لے آؤٹ دائیں سے بائیں ہو جاتا ہے۔', minAttendance: 'کم از کم حاضری %', minAttendanceDesc: 'اس سے کم والے طلبہ شارٹیج میں شمار ہوں گے۔',
     warnAt: 'انتباہ کی حد %', warnAtDesc: 'اس سے کم (لیکن کم از کم سے اوپر) والے طلبہ کو انتباہ ملتا ہے۔', leaveCounts: 'رخصت کو حاضر شمار کریں', leaveCountsDesc: 'منظور شدہ رخصت سے حاضری کم نہیں ہوگی۔', manageSemDesc: 'سمسٹرز بنائیں، آرکائیو یا حذف کریں۔',
-    theme: 'تھیم', themeDesc: 'لیکٹس کی شکل چنیں۔', auto: 'سسٹم', light: 'روشن', dark: 'گہرا',
+    theme: 'تھیم', themeDesc: 'GMC Attendance کی شکل چنیں۔', auto: 'سسٹم', light: 'روشن', dark: 'گہرا',
     backupHint: 'تمام ڈیٹا صرف اسی ڈیوائس میں ہے۔ باقاعدگی سے بیک اپ ڈاؤن لوڈ کریں اور خود کو بھیج دیں (واٹس ایپ / ای میل)۔', downloadBackup: 'بیک اپ ڈاؤن لوڈ کریں', lastBackup: 'آخری بیک اپ', restoreBackup: 'بیک اپ سے بحال کریں', restoreDesc: 'موجودہ ڈیٹا کو بیک اپ فائل سے بدلیں۔',
-    confirmRestore: 'اس سے تمام موجودہ ڈیٹا بیک اپ فائل سے بدل جائے گا۔', badFile: 'یہ فائل درست لیکٹس بیک اپ نہیں۔', resetAll: 'تمام ڈیٹا ری سیٹ', resetAllDesc: 'ہر سمسٹر، طالب علم اور ریکارڈ مستقل حذف ہو جائے گا۔', confirmReset: 'اس سے اس ڈیوائس پر سب کچھ حذف ہو جائے گا۔ یقین نہ ہو تو پہلے بیک اپ لیں۔',
+    confirmRestore: 'اس سے تمام موجودہ ڈیٹا بیک اپ فائل سے بدل جائے گا۔', badFile: 'یہ فائل درست GMC Attendance بیک اپ نہیں۔', resetAll: 'تمام ڈیٹا ری سیٹ', resetAllDesc: 'ہر سمسٹر، طالب علم اور ریکارڈ مستقل حذف ہو جائے گا۔', confirmReset: 'اس سے اس ڈیوائس پر سب کچھ حذف ہو جائے گا۔ یقین نہ ہو تو پہلے بیک اپ لیں۔',
     version: 'ورژن', install: 'اپنے فون پر انسٹال کریں', installHint: 'براؤزر مینو کھولیں اور “Add to Home Screen” چنیں۔ کسی ایپ اسٹور کی ضرورت نہیں۔', privacy: 'پرائیویسی', privacyDesc: 'کچھ بھی اپ لوڈ نہیں ہوتا۔ آپ کا ڈیٹا اس ڈیوائس سے باہر نہیں جاتا۔',
     toastSaved: 'تبدیلیاں محفوظ ہو گئیں', toastDeleted: 'حذف ہو گیا', toastSemCreated: 'سمسٹر بن گیا', toastSubjectAdded: 'مضمون شامل ہو گیا', toastStudentAdded: 'طالب علم شامل ہو گیا', toastImported: 'طلبہ امپورٹ ہوئے', toastAttSaved: 'حاضری محفوظ ہو گئی',
     toastExported: 'فائل ایکسپورٹ ہو گئی', toastBackup: 'بیک اپ ڈاؤن لوڈ ہو گیا', toastRestored: 'بیک اپ بحال ہو گیا', toastReset: 'تمام ڈیٹا ری سیٹ ہو گیا',
     errStorage: 'تبدیلیاں محفوظ نہیں ہو سکیں۔ اسٹوریج بھرا یا بلاک ہو سکتا ہے۔', errGenericTitle: 'کچھ غلط ہو گیا', errGenericDesc: 'یہ صفحہ دکھایا نہیں جا سکا۔ براہ کرم دوبارہ کوشش کریں۔',
-    errCorruptTitle: 'محفوظ ڈیٹا پڑھا نہیں جا سکا', errCorruptDesc: 'آپ کا ڈیٹا تبدیل نہیں ہوا اور ایک کاپی رکھ لی گئی ہے۔ دوبارہ لوڈ کریں، یا نئے سرے سے شروع کریں (بیک اپ فائل سب سے محفوظ راستہ ہے)۔', errBlockedTitle: 'اسٹوریج بلاک ہے', errBlockedDesc: 'آپ کا براؤزر لوکل اسٹوریج بلاک کر رہا ہے (پرائیویٹ موڈ؟)۔ لیکٹس کو عام ونڈو میں کھولیں۔', startFresh: 'نئے سرے سے شروع کریں'
+    errCorruptTitle: 'محفوظ ڈیٹا پڑھا نہیں جا سکا', errCorruptDesc: 'آپ کا ڈیٹا تبدیل نہیں ہوا اور ایک کاپی رکھ لی گئی ہے۔ دوبارہ لوڈ کریں، یا نئے سرے سے شروع کریں (بیک اپ فائل سب سے محفوظ راستہ ہے)۔', errBlockedTitle: 'اسٹوریج بلاک ہے', errBlockedDesc: 'آپ کا براؤزر لوکل اسٹوریج بلاک کر رہا ہے (پرائیویٹ موڈ؟)۔ GMC Attendance کو عام ونڈو میں کھولیں۔', startFresh: 'نئے سرے سے شروع کریں'
   }
 };
