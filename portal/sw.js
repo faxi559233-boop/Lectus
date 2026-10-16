@@ -1,6 +1,6 @@
 /* Portal service worker: app-shell cache + web push. API responses are NEVER cached (they contain personal data). */
-const CACHE = 'gmc-portal-v4';
-const SHELL = ['/portal/', '/portal/portal.css', '/portal/core.js', '/portal/student.js', '/portal/teacher.js', '/portal/results.js', '/portal/fees.js', '/portal/leave.js', '/portal/academic.js', '/portal/security.js', '/portal/admin.js', '/portal/boot.js', '/portal/portal-i18n.js', '/styles.css', '/ui.js', '/icons.js', '/xlsx.js', '/i18n.js', '/icons/logo.jpg', '/icons/favicon.png'];
+const CACHE = 'gmc-portal-v5';
+const SHELL = ['/portal/', '/portal/portal.css', '/portal/core.js', '/portal/student.js', '/portal/teacher.js', '/portal/results.js', '/portal/fees.js', '/portal/leave.js', '/portal/academic.js', '/portal/security.js', '/portal/services.js', '/portal/admin.js', '/portal/boot.js', '/portal/portal-i18n.js', '/styles.css', '/ui.js', '/icons.js', '/xlsx.js', '/i18n.js', '/icons/logo.jpg', '/icons/favicon.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k.startsWith('gmc-portal-') && k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim())); });
 self.addEventListener('fetch', e => {

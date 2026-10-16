@@ -59,7 +59,7 @@ function modalShell(d, title, desc, body, footer) {
     h('div', { class: 'modal-head' }, h('div', {}, h('h2', { id }, title), desc ? h('p', { class: 'sub' }, desc) : null),
       iconBtn('x', t('close'), () => d.close())),
     h('div', { class: 'modal-body' }, body),
-    footer ? h('div', { class: 'modal-foot' }, footer) : null);
+    ...(footer ? [h('div', { class: 'modal-foot' }, footer)] : []));
 }
 
 /* fields: [{key,label,type,required,help,placeholder,value,options,rows}] ; onSubmit(values) -> {key:error}|undefined */

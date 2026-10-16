@@ -34,7 +34,8 @@ Rules: no cross-department reads for HOD; teachers cannot read other teachers' o
 | 11 | Leave applications & approval (HOD; absences turn into leave) | 2 | ✅ |
 | 12 | Timetable clash checker, room allocation | 2 | ⬜ |
 | 13 | Exam eligibility (flag from attendance on the marks sheet and on published results) | 2 | ✅ |
-| 14 | Parent/guardian read-only access | 3 | ⬜ |
+| 14 | Parent/guardian read-only access | 3 | ⬜ (postponed by the college) |
+| 17 | Certificates with public verification, complaints, anonymous teacher feedback, calendar, attendance corrections, student profile, data export/anonymise, at-risk list, two-step login, timetable, term rollover, attendance warning ladder | 2 | ✅ |
 | 15 | Marks, HOD approval, published results, GPA/CGPA, transcript view, CSV export (grade scale must be set to the official University of Gujrat table) | 2 | ✅ |
 | 16 | Fees: plans, numbered vouchers, partial payments, discounts, late fines, bank-statement import, printable voucher, accounts-officer role (no direct bank/1Bill API yet) | 2 | ✅ |
 

@@ -45,10 +45,10 @@ const HOME = { student: '/me', teacher: '/courses', hod: '/dept', admin: '/admin
 const has = (u, perm) => u.role === 'admin' && (u.perms === 'all' || String(u.perms || '').split(',').includes(perm));
 const homeOf = u => (u.role === 'admin' && u.perms !== 'all' ? (has(u, 'fees') ? '/admin/fees' : '/courses') : HOME[u.role]);
 const NAV = {
-  student: [['/me', 'dashboard', 'nHome'], ['/timetable', 'clock', 'nTimetable'], ['/results', 'cap', 'nResults'], ['/fees', 'database', 'nFees'], ['/leave', 'calendar', 'nLeave'], ['/inbox', 'message', 'nInbox']],
-  teacher: [['/courses', 'attendance', 'nCourses'], ['/timetable', 'clock', 'nTimetable'], ['/inbox', 'message', 'nInbox']],
-  hod: [['/dept', 'chart', 'nDept'], ['/courses', 'attendance', 'nAllCourses'], ['/timetable', 'clock', 'nTimetable'], ['/leaves', 'calendar', 'nLeaves'], ['/inbox', 'message', 'nInbox']],
-  admin: [['/admin', 'dashboard', 'nOverview'], ['/admin/structure', 'building', 'nStructure'], ['/admin/students', 'users', 'nStudents'], ['/admin/users', 'user', 'nUsers'], ['/courses', 'attendance', 'nAllCourses'], ['/dept', 'chart', 'nDept'], ['/admin/fees', 'database', 'nFees'], ['/leaves', 'calendar', 'nLeaves'], ['/timetable', 'clock', 'nTimetable'], ['/admin/audit', 'archive', 'nAudit'], ['/admin/settings', 'settings', 'nSettings']]
+  student: [['/me', 'dashboard', 'nHome'], ['/timetable', 'clock', 'nTimetable'], ['/results', 'cap', 'nResults'], ['/fees', 'database', 'nFees'], ['/leave', 'calendar', 'nLeave'], ['/services', 'file', 'nServices'], ['/inbox', 'message', 'nInbox']],
+  teacher: [['/courses', 'attendance', 'nCourses'], ['/timetable', 'clock', 'nTimetable'], ['/requests', 'check', 'nRequests'], ['/inbox', 'message', 'nInbox']],
+  hod: [['/dept', 'chart', 'nDept'], ['/courses', 'attendance', 'nAllCourses'], ['/timetable', 'clock', 'nTimetable'], ['/requests', 'check', 'nRequests'], ['/inbox', 'message', 'nInbox']],
+  admin: [['/admin', 'dashboard', 'nOverview'], ['/admin/structure', 'building', 'nStructure'], ['/admin/students', 'users', 'nStudents'], ['/admin/users', 'user', 'nUsers'], ['/courses', 'attendance', 'nAllCourses'], ['/dept', 'chart', 'nDept'], ['/admin/fees', 'database', 'nFees'], ['/requests', 'check', 'nRequests'], ['/timetable', 'clock', 'nTimetable'], ['/admin/audit', 'archive', 'nAudit'], ['/admin/settings', 'settings', 'nSettings']]
 };
 const navFor = u => (u.role === 'admin' && u.perms !== 'all'
   ? [...(has(u, 'fees') ? [['/admin/fees', 'database', 'nFees']] : []), ...(has(u, 'exams') ? [['/courses', 'attendance', 'nAllCourses'], ['/admin/settings', 'settings', 'nSettings']] : []), ['/inbox', 'message', 'nInbox']]

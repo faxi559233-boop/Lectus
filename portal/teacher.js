@@ -146,7 +146,7 @@ route('/dept', ['hod', 'admin'], async (q) => {
   return deptView(qs, null, deptId);
 });
 async function deptView(qs, deps, cur) {
-  const [ov, sh] = await Promise.all([api('GET', '/api/department/overview' + qs), api('GET', '/api/department/shortage' + qs)]);
+  const [ov, sh, risk] = await Promise.all([api('GET', '/api/department/overview' + qs), api('GET', '/api/department/shortage' + qs), api('GET', '/api/department/at-risk' + qs)]);
   const out = h('div', { class: 'stack-page' }, pageHeader({ title: `${t('deptOverview')}: ${ov.department.name}`, desc: `${t('minAtt')}: ${num(ov.min_pct)}%`,
     actions: [deps ? selectInput(cur, deps.map(x => ({ value: x.id, label: x.name })), v => go('/dept?dept=' + v), t('dept')) : null, btn(t('exportCsv'), { icon: 'download', onclick: () => downloadCsv('/api/department/shortage.csv' + qs) })] }));
   out.append(h('div', { class: 'stats' }, statCard({ label: t('attendanceRate'), value: pctTxt(ov.rate), iconName: 'chart' }), statCard({ label: t('shortageN'), value: num(ov.shortage), iconName: 'alert', tone: ov.shortage ? 'danger' : 'success' }), statCard({ label: t('lectures'), value: num(ov.lectures), iconName: 'calendar' })));
@@ -157,6 +157,8 @@ async function deptView(qs, deps, cur) {
     { label: t('roll'), render: r => r.roll }, { label: t('name'), render: r => r.name }, { label: t('course'), render: r => `${r.course_code} · ${r.section_name}` },
     { label: t('attendanceRate'), render: r => pctTxt(r.pct) }, { label: t('outlookLbl'), render: r => outTxt(r.outlook) || '—' },
     { label: '', render: r => { const w = waLink(r.phone, tf('waText', { name: r.name, course: r.course_code, pct: pctTxt(r.pct), min: num(r.min) })); return w ? h('a', { href: w, target: '_blank', rel: 'noopener', class: 'btn ghost sm' }, t('whatsapp')) : null; } }], rows: sh.items.slice(0, 300) }) : h('p', { class: 'sub' }, t('noShortage'))));
+  out.append(h('section', { class: 'card' }, h('h2', {}, t('atRisk')), h('p', { class: 'sub' }, t('atRiskHint')), risk.length ? dataTable({ cols: [{ label: t('roll'), render: r => r.roll }, { label: t('name'), render: r => r.name }, { label: t('lowCourses'), render: r => num(r.low) }, { label: t('nearCourses'), render: r => num(r.near) }, { label: t('failedCourses'), render: r => num(r.fails) },
+    { label: '', render: r => { const w = waLink(r.phone, tf('waText', { name: r.name, course: '', pct: '', min: '' })); return w ? h('a', { href: w, target: '_blank', rel: 'noopener', class: 'btn ghost sm' }, t('whatsapp')) : null; } }], rows: risk.slice(0, 100) }) : h('p', { class: 'sub' }, t('noShortage'))));
   return out;
 }
 async function downloadCsv(url) {

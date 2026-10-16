@@ -50,7 +50,7 @@ route('/me', ['student'], async () => {
       { label: t('outlookLbl'), render: r => outTxt(r.outlook) || '—' }
     ], rows: d.offerings })));
   out.append(h('section', { class: 'card', 'aria-labelledby': 'rc-h' }, h('h2', { id: 'rc-h' }, t('recentRecords')),
-    d.recent.length ? h('ul', { class: 'plain-list' }, d.recent.map(r => h('li', {}, h('span', { class: 'sub' }, fmtDate(r.date)), ' ', h('b', {}, r.course_code), ' ', badge(ST_TONE[r.status], t(ST_LABEL[r.status]))))) : h('p', { class: 'sub' }, '—')));
+    d.recent.length ? h('ul', { class: 'plain-list' }, d.recent.map(r => h('li', {}, h('span', { class: 'sub' }, fmtDate(r.date)), ' ', h('b', {}, r.course_code), ' ', badge(ST_TONE[r.status], t(ST_LABEL[r.status])), r.status === 'A' ? btn(t('reportMistake'), { size: 'sm', v: 'ghost', onclick: () => correctionDialog(r) }) : null))) : h('p', { class: 'sub' }, '—')));
   return out;
 });
 
@@ -81,4 +81,9 @@ function announceCard() {
     onSubmit: vals => { const scope = vals.scope; const sid = scope === 'dept' ? P.user.dept_id : scope === 'section' ? +vals.scope_id : undefined;
       api('POST', '/api/announcements', { scope, scope_id: sid, title: vals.title, body: vals.body }).then(r => toast(`${t('sentTo')} ${num(r.recipients)} ${t('recipients')}`)).catch(e => toast(e.message, 'error')); } });
   } }));
+}
+
+function correctionDialog(r) {
+  formDialog({ title: t('reportMistake'), desc: `${r.course_code} · ${fmtDate(r.date)}`, fields: [{ key: 'status', label: t('wantsStatus'), type: 'select', options: [{ value: 'P', label: t('present') }, { value: 'L', label: t('leave') }, { value: 'T', label: t('late') }] }, { key: 'note', label: t('reason'), type: 'textarea', rows: 3, required: true }],
+    onSubmit: v => { api('POST', '/api/corrections', { session_id: r.session_id, status: v.status, note: v.note }).then(() => toast(t('correctionSent'))).catch(e => toast(e.message, 'error')); } });
 }

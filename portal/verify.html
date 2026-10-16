@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="description" content="Check that a GMC Check-in certificate is genuine.">
+<title>Verify a certificate · GMC Check-in</title>
+<link rel="icon" type="image/png" href="/icons/favicon.png">
+<link rel="stylesheet" href="/styles.css">
+<link rel="stylesheet" href="/portal/portal.css">
+</head>
+<body>
+<main class="login-wrap">
+  <div class="card login-card">
+    <div class="brandrow"><img class="logo" src="/icons/logo.jpg" alt=""><div><h1>Verify a certificate</h1><p class="sub">Type the code printed on the certificate.</p></div></div>
+    <form id="f" novalidate>
+      <div class="field"><label for="code">Certificate code</label><input class="input" id="code" autocomplete="off" autocapitalize="characters" maxlength="14" placeholder="ABCD-EFGH-JKLM"></div>
+      <button class="btn primary" type="submit">Check</button>
+    </form>
+    <div id="out" role="status" aria-live="polite" style="margin-top:14px"></div>
+  </div>
+</main>
+<script src="/portal/verify.js" defer></script>
+</body>
+</html>

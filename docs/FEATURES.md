@@ -21,10 +21,10 @@ Ye module sab se pehle pakka hona chahiye. Baqi sab is par khara hai.
 | ATT-05 | Ek student = ek device (proxy rokna) | Pehle login wala device bind hota hai; doosre phone se check-in par teacher ko flag. Perfect nahi, sirf rukawat. | Phase 2 · Department | M | risk |
 | ATT-06 | Leave application + approval | Student leave ke liye apply karta hai, HOD approve/reject karta hai, approve par us muddat ki absent hazri leave ban jati hai. Bana hua. | Bana hua | - |  |
 | ATT-07 | Medical certificate upload | Leave ke saath document attach. Sehat ka data hai, is liye sakht access aur retention rule. | Phase 2 · Department | M | risk |
-| ATT-08 | Hazri correction request | Student kahe "meri hazri ghalat hai", teacher dekh kar theek kare, sab audit mein. | Phase 2 · Department | S |  |
+| ATT-08 | Hazri correction request | Student 7 din ke andar "main hazir tha" likhta hai, course teacher manzoor/rad karta hai, stats khud theek. Bana hua. | Bana hua | - |  |
 | ATT-09 | Condonation / shortage relief | College rule ke mutabiq HOD kam hazri mein riayat de sake, wajah ke saath. | Phase 3 · College | M |  |
 | ATT-10 | Auto-warning ladder (80% / 75% / 70%) | Roz khud chalta hai: minimum ke 5 point qareeb par ek notice, minimum se neeche jane par doosra. Dobara nahi bhejta. Bana hua. | Bana hua | - |  |
-| ATT-11 | Holiday calendar + class-cancel | Chuttiyan aur cancelled lectures, hazri ke hisab se bahar. | Phase 2 · Department | M |  |
+| ATT-11 | Holiday calendar + class-cancel | Calendar (chuttiyan, imtehan, deadline) admin ke zariye; holiday par lecture banane se pehle poochta hai. Cancelled-lecture ka alag nishan abhi nahi. Bana hua. | Bana hua | - |  |
 | ATT-12 | Substitute / extra / make-up lecture | Doosra teacher cover kare ya extra class ho to record sahi rahe. | Phase 2 · Department | M |  |
 | ATT-13 | Teacher attendance & punctuality | Teacher ke lecture start/end ka record (HOD ke liye). | Phase 3 · College | M | risk |
 | ATT-14 | Guardian alert (parent ko) | Lagatar absent par parent ko message. Parent portal ya SMS/WhatsApp se. | Phase 3 · College | M | ext |
@@ -43,7 +43,7 @@ Pakistan mein 75% hazri aam shart hai (Punjab University, Hamdard mein tasdeeq h
 | ACA-05 | Student course registration | Student apne courses khud chune, prerequisite check, credit-hour limit. | Phase 3 · College | L |  |
 | ACA-06 | Course outline / syllabus upload | Har course ka outline aur lecture plan. | Phase 2 · Department | S |  |
 | ACA-07 | Faculty workload report | Kis teacher ke kitne credit hours / lectures. | Phase 3 · College | S |  |
-| ACA-08 | Academic calendar (ICS feed) | Semester ki tareekhein student ke phone calendar mein. | Phase 3 · College | S |  |
+| ACA-08 | Academic calendar (ICS feed) | App ke andar academic calendar sab ko dikhta hai. Phone calendar mein (ICS) abhi nahi. Bana hua. | Bana hua | - |  |
 
 ## Exams, marks, results
 Ye sab se hassas hissa hai. Pehle attendance aur announcements pakke karein, phir marks. Galti ka nuqsan sab se bara hai.
@@ -55,7 +55,7 @@ Ye sab se hassas hissa hai. Pehle attendance aur announcements pakke karein, phi
 | EXM-03 | Marks entry (teacher) + HOD approval | Teacher marks bhare, HOD manzoor ya wapas kare, publish ke baad lock, sirf admin reason ke saath reopen. Bana hua. | Bana hua | - |  |
 | EXM-04 | Grade scale, GPA / CGPA | Grade table admin khud set kare (University of Gujrat ka official table daalna zaroori), credit-weighted GPA/CGPA. Bana hua. | Bana hua | - |  |
 | EXM-05 | Result card / DMC (PDF) | Student ka result page (print / PDF), CGPA aur GPA. QR verify abhi nahi. | Bana hua | - |  |
-| EXM-06 | Transcript | Tamam semesters ka transcript, official stamp workflow. | Baad mein | L | risk |
+| EXM-06 | Transcript | Admin/HOD kisi bhi student ka transcript dekh aur print kar sakta hai. Official stamp ka workflow abhi nahi. Bana hua. | Bana hua | - |  |
 | EXM-07 | Datesheet & seating plan | Paper ki tareekhein, kamra, roll number slips. | Baad mein | L |  |
 | EXM-08 | Recheck / recount request | Student recheck ki darkhwast de, fee ke saath. | Baad mein | M |  |
 | EXM-09 | Invigilation duty roster | Kis teacher ki kahan duty. | Baad mein | M |  |
@@ -87,11 +87,11 @@ Naye students ke liye. Abhi chhote pilot ko iski zaroorat nahi.
 
 | ID | Feature | Kya hai | Phase | Effort | Flag |
 |---|---|---|---|---|---|
-| STU-01 | Student profile & documents | Naam, rabta, section. Kam se kam data (CNIC tabhi jab zaroori ho). | Phase 2 · Department | S | risk |
+| STU-01 | Student profile & documents | Student apna phone, email, guardian ka naam/phone, pata khud likhta hai. Bana hua. | Bana hua | - |  |
 | STU-02 | ID card with QR (PDF print) | Digital aur print card, QR se verify. | Phase 3 · College | M |  |
-| STU-03 | Certificates (bonafide / character) with QR verification | Request, approve, verifiable PDF. | Phase 3 · College | M |  |
-| STU-04 | Complaints / grievance box | Anonymous ya naam ke saath, HOD tak. | Phase 3 · College | M |  |
-| STU-05 | Teacher feedback survey (QEC style) | Semester ke end mein anonymous feedback, teacher ko aggregate report. | Phase 3 · College | M |  |
+| STU-03 | Certificates (bonafide / character) with QR verification | Bonafide, character, fee clearance (balance zero ho to), attendance certificate. Print, aur public page par code se tasdeeq. QR image abhi nahi. Bana hua. | Bana hua | - |  |
+| STU-04 | Complaints / grievance box | Student category ke saath likhta hai; HOD ya admin jawab deta hai; "mera naam chhupao" ka option; harassment sirf admin ko. Bana hua. | Bana hua | - |  |
+| STU-05 | Teacher feedback survey (QEC style) | Anonymous rating (6 sawal), har course par ek baar, teacher ko sirf average aur sirf 5+ jawab ke baad. Bana hua. | Bana hua | - |  |
 | STU-06 | Disciplinary record | Sirf admin/HOD ko, sakht access. | Baad mein | M | risk |
 | STU-07 | Alumni directory | Pass-out students ka record. | Baad mein | M |  |
 | STU-08 | Clubs & events | Society, event registration. | Baad mein | M |  |
@@ -143,7 +143,7 @@ Sirf agar college ko waqai chahiye. Har ek alag chhota system hai.
 | ID | Feature | Kya hai | Phase | Effort | Flag |
 |---|---|---|---|---|---|
 | ANA-01 | HOD dashboard + shortage list + CSV | Bana hua hai. | Bana hua | - |  |
-| ANA-02 | Early-warning (hazri + marks se khatray mein students) | Tadad aur nazar, counselor ko list. | Phase 3 · College | M |  |
+| ANA-02 | Early-warning (hazri + marks se khatray mein students) | HOD ke page par: kam hazri, minimum ke qareeb, fail courses ke hisab se khatre mein students. Bana hua. | Bana hua | - |  |
 | ANA-03 | Teacher/course comparison, heatmaps | Kaun si class mein hazri kam. | Phase 3 · College | M |  |
 | ANA-04 | Scheduled email report (haftawar PDF) | HOD ko har Monday report. | Phase 3 · College | S | ext |
 | ANA-05 | HEC/QEC style export | University ke reporting format mein Excel. | Baad mein | M |  |
@@ -157,7 +157,7 @@ Pakistan mein abhi koi mukammal data-protection qanoon nafiz nahi (research ke m
 | SEC-02 | 2FA (authenticator app) for admin / HOD | Authenticator app (TOTP) aur 8 backup codes, replay band. Bana hua. | Bana hua | - |  |
 | SEC-03 | "Sign out everywhere" + active sessions list | Apne devices ki list aur "baqi sab se sign out". Bana hua. | Bana hua | - |  |
 | SEC-04 | Privacy policy page + consent record | Student ko batana ke kya data, kyun, kab tak. | Phase 2 · Department | M | risk |
-| SEC-05 | Data export / delete request tool | Student ke data ki copy ya hazf ki darkhwast. | Phase 3 · College | M | risk |
+| SEC-05 | Data export / delete request tool | Admin ek student ka poora data JSON mein export kar sakta hai, ya zaati tafseel hata sakta hai (results/hazri/fees ka record rehta hai). Bana hua. | Bana hua | - |  |
 | SEC-06 | Retention rules (purana data khud mitana) | Maslan leave documents 1 saal baad. | Phase 3 · College | M | risk |
 | SEC-07 | Two-person approval for sensitive changes | Marks lock khulna jese kaam mein 2 log. | Baad mein | M |  |
 | SEC-08 | Independent security test (pen-test) | Bahar ka mahir hamla karke dekhe. Paisa lagta hai. | Baad mein | L | ext |

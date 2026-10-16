@@ -1,5 +1,6 @@
 /* GMC Check-in — state, routing and pages. Data model is backward compatible with v1 (storage key preserved). */
 'use strict';
+{ const f = document.getElementById('gfont'); if (f) f.media = 'all'; }   // web font loads without blocking first paint; no inline handler so a strict CSP is fine
 
 const KEY = 'lectus-data-v1';
 const VERSION = '3.0.0';
