@@ -17,6 +17,8 @@ import resultsRoutes from './routes/results.mjs';
 import feesRoutes from './routes/fees.mjs';
 import leaveRoutes from './routes/leave.mjs';
 import academicRoutes from './routes/academic.mjs';
+import campusRoutes from './routes/campus.mjs';
+import servicesRoutes from './routes/services.mjs';
 import { runWarnings } from './lib/warnings.mjs';
 
 export const VERSION = '1.0.0';
@@ -25,7 +27,7 @@ export async function createApp({ dbFile, workers = true, pushSender } = {}) {
   const db = openDb(dbFile);
   const router = new Router(db);
   router.get('/api/health', { auth: false }, () => { db.prepare('SELECT 1').get(); return { ok: true, version: VERSION }; });
-  for (const mod of [authRoutes, adminRoutes, attendanceRoutes, studentRoutes, hodRoutes, notifyRoutes, resultsRoutes, feesRoutes, leaveRoutes, academicRoutes]) mod(router, db);
+  for (const mod of [authRoutes, adminRoutes, attendanceRoutes, studentRoutes, hodRoutes, notifyRoutes, resultsRoutes, feesRoutes, leaveRoutes, academicRoutes, campusRoutes, servicesRoutes]) mod(router, db);
   if (workers) await initPush();
   const server = http.createServer(async (req, res) => {
     try { if (!(await router.handle(req, res))) serveStatic(req, res); }

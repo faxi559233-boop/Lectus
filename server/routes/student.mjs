@@ -17,7 +17,7 @@ export default function (r, db) {
         (SELECT COUNT(*) FROM lecture_sessions ls WHERE ls.offering_id=o.id) AS lectures_held
       FROM enrollments e JOIN offerings o ON o.id=e.offering_id JOIN courses c ON c.id=o.course_id LEFT JOIN users t ON t.id=o.teacher_id WHERE e.student_id=? ORDER BY c.code`).all(st.id)
       .map(o => ({ ...o, ...decorate(stats.get(o.offering_id) || { P: 0, A: 0, L: 0, T: 0, total: 0 }, o.min_pct, set) }));
-    const recent = db.prepare(`SELECT s.date, c.code AS course_code, c.name AS course_name, a.status FROM attendance a JOIN lecture_sessions s ON s.id=a.session_id
+    const recent = db.prepare(`SELECT s.id AS session_id, s.date, c.code AS course_code, c.name AS course_name, a.status FROM attendance a JOIN lecture_sessions s ON s.id=a.session_id
       JOIN offerings o ON o.id=s.offering_id JOIN courses c ON c.id=o.course_id WHERE a.student_id=? ORDER BY s.date DESC, s.id DESC LIMIT 20`).all(st.id);
     const open = db.prepare(`SELECT s.id, c.code AS course_code, c.name AS course_name, s.code_until, (s.geo_lat IS NOT NULL) AS needs_location FROM lecture_sessions s JOIN enrollments e ON e.offering_id=s.offering_id
       JOIN offerings o ON o.id=s.offering_id JOIN courses c ON c.id=o.course_id WHERE e.student_id=? AND s.code_until>0 AND s.code_until>?`).all(st.id, now());

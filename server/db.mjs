@@ -138,6 +138,31 @@ ALTER TABLE users ADD COLUMN totp_on INTEGER NOT NULL DEFAULT 0;
 ALTER TABLE users ADD COLUMN totp_last INTEGER NOT NULL DEFAULT 0;
 ALTER TABLE users ADD COLUMN backup_codes TEXT;
 CREATE TABLE warn_log(offering_id INTEGER NOT NULL, student_id INTEGER NOT NULL, level INTEGER NOT NULL, ts INTEGER NOT NULL, PRIMARY KEY(offering_id, student_id, level)) WITHOUT ROWID;
+`,`
+-- calendar, attendance corrections, certificates, complaints, anonymous teacher feedback, student contact details
+ALTER TABLE students ADD COLUMN guardian_name TEXT;
+ALTER TABLE students ADD COLUMN guardian_phone TEXT;
+ALTER TABLE students ADD COLUMN address TEXT;
+ALTER TABLE students ADD COLUMN email TEXT;
+CREATE TABLE calendar_events(id INTEGER PRIMARY KEY, date TEXT NOT NULL, end_date TEXT, title TEXT NOT NULL, kind TEXT NOT NULL CHECK(kind IN ('holiday','exam','event','deadline')), created_by INTEGER, created_at INTEGER NOT NULL);
+CREATE INDEX cal_date ON calendar_events(date);
+CREATE TABLE corrections(
+  id INTEGER PRIMARY KEY, session_id INTEGER NOT NULL REFERENCES lecture_sessions(id) ON DELETE CASCADE, student_id INTEGER NOT NULL REFERENCES students(id) ON DELETE CASCADE,
+  requested_status TEXT NOT NULL CHECK(requested_status IN ('P','L','T')), note TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending','approved','rejected')),
+  decided_by INTEGER, decided_at INTEGER, decision_note TEXT, created_at INTEGER NOT NULL, UNIQUE(session_id, student_id));
+CREATE INDEX corr_status ON corrections(status);
+CREATE TABLE cert_requests(
+  id INTEGER PRIMARY KEY, student_id INTEGER NOT NULL REFERENCES students(id) ON DELETE CASCADE, kind TEXT NOT NULL CHECK(kind IN ('bonafide','character','fee_clearance','attendance')), purpose TEXT,
+  status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending','issued','rejected')), code TEXT UNIQUE, issued_by INTEGER, issued_at INTEGER, decision_note TEXT, created_at INTEGER NOT NULL, snapshot TEXT);
+CREATE INDEX cert_status ON cert_requests(status);
+CREATE TABLE complaints(
+  id INTEGER PRIMARY KEY, student_id INTEGER REFERENCES students(id) ON DELETE SET NULL, hide_name INTEGER NOT NULL DEFAULT 0, category TEXT NOT NULL CHECK(category IN ('academic','fees','harassment','facilities','other')),
+  body TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'open' CHECK(status IN ('open','in_progress','resolved')), response TEXT, handled_by INTEGER, created_at INTEGER NOT NULL, updated_at INTEGER);
+CREATE INDEX comp_status ON complaints(status, category);
+CREATE TABLE surveys(id INTEGER PRIMARY KEY, title TEXT NOT NULL, term_id INTEGER REFERENCES terms(id), opens TEXT NOT NULL, closes TEXT NOT NULL, created_at INTEGER NOT NULL);
+CREATE TABLE survey_done(survey_id INTEGER NOT NULL REFERENCES surveys(id) ON DELETE CASCADE, offering_id INTEGER NOT NULL, student_id INTEGER NOT NULL, PRIMARY KEY(survey_id, offering_id, student_id)) WITHOUT ROWID;
+CREATE TABLE survey_answers(id INTEGER PRIMARY KEY, survey_id INTEGER NOT NULL REFERENCES surveys(id) ON DELETE CASCADE, offering_id INTEGER NOT NULL, ratings TEXT NOT NULL, comment TEXT, day TEXT NOT NULL);
+CREATE INDEX sans_off ON survey_answers(survey_id, offering_id);
 `];
 
 export function openDb(file) {

@@ -4,6 +4,7 @@ import { audit } from '../lib/audit.mjs';
 import { tx } from '../db.mjs';
 import { loadOffering, loadSession, canView, needMark, needView } from '../lib/access.mjs';
 import { getSettings, perStudentForOffering, decorate } from '../lib/stats.mjs';
+import { holidayOn } from './campus.mjs';
 
 const TEACH = { auth: ['teacher', 'admin'] }, VIEW = { auth: ['teacher', 'admin', 'hod'] };
 export const BUCKET_MS = 30000;
@@ -28,6 +29,7 @@ export default function (r, db) {
     const o = loadOffering(db, v.int(ctx.params.id, 'id', { min: 1 })); needMark(ctx.user, o);
     const date = v.date(ctx.body.date ?? today(), 'date'), topic = v.str(ctx.body.topic, 'topic', { max: 160, optional: true });
     if (date > new Date(Date.now() + 86400e3).toISOString().slice(0, 10)) throw bad('future_date', 'Date cannot be in the future');
+    const hol = holidayOn(db, date); if (hol && ctx.body.force !== true) throw new HttpError(409, 'holiday', `${date} is marked as a holiday (${hol.title}). Create the lecture anyway?`);
     const res = db.prepare('INSERT INTO lecture_sessions(offering_id,date,topic,created_by,created_at) VALUES (?,?,?,?,?)').run(o.id, date, topic, ctx.user.id, now());
     const id = Number(res.lastInsertRowid); audit(db, ctx.user, 'session.create', 'session', id, { offering: o.id, date }, ctx.ip); ctx.status = 201; return { id, date, topic };
   });
