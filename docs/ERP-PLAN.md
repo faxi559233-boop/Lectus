@@ -31,12 +31,12 @@ Rules: no cross-department reads for HOD; teachers cannot read other teachers' o
 | 8 | Bulk import (students/teachers) CSV/XLSX | 1 | ✅ |
 | 9 | Web-push notifications + announcements | 1 | 🟡 (needs HTTPS + real devices) |
 | 10 | Nightly backup + restore drill + health checks | 1 | ✅ / 🟡 off-site copy needs credentials |
-| 11 | Leave applications & approval | 2 | ⬜ |
+| 11 | Leave applications & approval (HOD; absences turn into leave) | 2 | ✅ |
 | 12 | Timetable clash checker, room allocation | 2 | ⬜ |
-| 13 | Exam eligibility (auto from shortage rules) | 2 | ⬜ |
+| 13 | Exam eligibility (flag from attendance on the marks sheet and on published results) | 2 | ✅ |
 | 14 | Parent/guardian read-only access | 3 | ⬜ |
-| 15 | Marks / results / GPA | 4 | ⬜ (sensitive: only after 1-3 are stable) |
-| 16 | Fees / accounts | — | ⬜ integrate with an existing system instead of building |
+| 15 | Marks, HOD approval, published results, GPA/CGPA, transcript view, CSV export (grade scale must be set to the official University of Gujrat table) | 2 | ✅ |
+| 16 | Fees: plans, numbered vouchers, partial payments, discounts, late fines, bank-statement import, printable voucher, accounts-officer role (no direct bank/1Bill API yet) | 2 | ✅ |
 
 ## 3. Architecture
 ```

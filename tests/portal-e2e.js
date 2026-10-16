@@ -96,6 +96,45 @@ const text = p => p.locator('#main').innerText();
   const dl = p.waitForEvent('download'); await p.click('button:has-text("Export CSV")'); const d = await dl; ok(/shortage\.csv/.test(d.suggestedFilename()), 'shortage CSV downloads');
   await p.screenshot({ path: OUT + '/hod.png', fullPage: true }); await ctx.close();
 
+  /* ---------- marks, approval, student result ---------- */
+  ({ ctx, p } = await newPage(b));
+  await login(p, 'teacher1@demo.local'); await p.goto(BASE + '/portal/#/courses'); await p.waitForSelector('.course-card'); await p.locator('.course-card').first().click(); await p.waitForSelector('.tabs');
+  const courseUrl = p.url();
+  await p.click('.tabs button:has-text("Marks")'); await p.waitForSelector('button:has-text("Use 15 / 25 / 60")');
+  await p.click('button:has-text("Use 15 / 25 / 60")'); await p.click('button:has-text("Save components")'); await p.waitForSelector('.marks-table');
+  ok(true, 'teacher defines components, marks grid appears');
+  await p.evaluate(() => { document.querySelectorAll('.marks-table input.mark').forEach(i => { i.value = String(Math.round(Number(i.max) * 0.8)); i.dispatchEvent(new Event('input', { bubbles: true })); }); });
+  await p.click('button:has-text("Submit for approval")'); await p.waitForSelector('text=Waiting for HOD', { timeout: 15000 }); ok(true, 'marks saved and submitted');
+  ok(await p.locator('.marks-table input.mark:not([disabled])').count() === 0, 'marks are locked after submission');
+  await ctx.close();
+  ({ ctx, p } = await newPage(b)); await login(p, 'hod@demo.local'); await p.goto(courseUrl); await p.waitForSelector('.tabs'); await p.click('.tabs button:has-text("Marks")');
+  await p.click('button:has-text("Publish results")'); await p.click('dialog .btn.primary'); await p.waitForSelector('.badge:has-text("Published")', { timeout: 15000 }); ok(true, 'HOD publishes the results'); await ctx.close();
+  ({ ctx, p } = await newPage(b)); await login(p, '21-ECO-001'); await p.goto(BASE + '/portal/#/results'); await p.waitForSelector('.printable table', { timeout: 15000 });
+  ok(/ECO501/.test(await text(p)) && /CGPA/.test(await text(p)), 'student sees the published result with CGPA'); ok((await text(p)).includes('A-') || (await text(p)).includes('B+') || (await text(p)).includes('A'), 'a grade is shown');
+  await p.screenshot({ path: OUT + '/results.png', fullPage: true }); await ctx.close();
+
+  /* ---------- fees: accounts officer, plan, vouchers, payment, student view ---------- */
+  ({ ctx, p } = await newPage(b)); await login(p, 'admin@demo.local');
+  const mkOff = await p.evaluate(async () => (await fetch('/api/admin/users', { method: 'POST', headers: { 'x-gmc': '1', 'content-type': 'application/json' }, body: JSON.stringify({ name: 'Accounts Officer', email: 'accounts@demo.local', role: 'admin', perms: 'fees', password: 'Ledger-Desk-Pass-1' }) })).status);
+  ok(mkOff === 201, 'scoped accounts-officer account created'); await ctx.close();
+  ({ ctx, p } = await newPage(b)); await p.goto(BASE + '/portal/'); await p.fill('#login-id', 'accounts@demo.local'); await p.fill('#login-pw', 'Ledger-Desk-Pass-1'); await p.click('button[type=submit]'); await p.waitForSelector('#cp-n1'); await p.fill('#cp-cur', 'Ledger-Desk-Pass-1'); await p.fill('#cp-n1', 'Ledger-Desk-Pass-2'); await p.fill('#cp-n2', 'Ledger-Desk-Pass-2'); await p.click('button[type=submit]'); await p.waitForSelector('.shell');
+  await p.goto(BASE + '/portal/#/admin/fees'); await p.waitForSelector('.stats'); ok(!(await p.locator('.sidebar').innerText()).includes('Users'), 'accounts officer sees a limited menu');
+  await p.click('.tabs button:has-text("Fee plans")'); await p.waitForSelector('text=No fee plans yet'); await p.click('button:has-text("New fee plan")'); await p.fill('#f-name', 'Fall 2026 Tuition');
+  await p.locator('dialog .row-inputs input').nth(1).fill('13335'); await p.click('dialog .btn.primary'); await p.waitForSelector('td:has-text("Fall 2026 Tuition")'); ok(true, 'fee plan created');
+  await p.click('button:has-text("Create vouchers")'); await p.selectOption('#f-section_id', { index: 0 }); await p.click('dialog .btn.primary'); await p.waitForSelector('.toast, [role=status]');
+  await p.click('.tabs button:has-text("Vouchers")'); await p.waitForSelector('td:has-text("21-ECO-001")'); ok(true, 'vouchers generated for a section');
+  await p.fill('input[type=search]', '21-ECO-001'); await p.waitForSelector('tbody tr:has-text("21-ECO-001")'); await p.click('tbody tr:has-text("21-ECO-001")'); await p.waitForSelector('.voucher');
+  const vno = (await p.locator('dialog .big-code').innerText()).trim(); ok(/^\d{11}$/.test(vno), 'voucher number is 11 digits');
+  await p.click('dialog button:has-text("Record payment")'); await p.fill('#f-amount', '5000'); await p.click('dialog dialog .btn.primary, dialog:last-of-type .btn.primary'); await p.waitForSelector('dialog .voucher .badge:has-text("Part paid")', { timeout: 15000 }); ok(true, 'part payment recorded');
+  const blocked = await p.evaluate(async () => (await fetch('/api/admin/users', { headers: { 'x-gmc': '1' } })).status); ok(blocked === 403, 'accounts officer cannot call user admin API');
+  await ctx.close();
+  ({ ctx, p } = await newPage(b)); await login(p, '21-ECO-001'); await p.goto(BASE + '/portal/#/fees'); await p.waitForSelector('.voucher'); const ft = await text(p); ok(ft.includes(vno) && /Part paid/.test(ft) && /8,335/.test(ft), 'student sees voucher, partial status and balance');
+  await p.screenshot({ path: OUT + '/fees.png', fullPage: true });
+
+  /* ---------- leave ---------- */
+  await p.goto(BASE + '/portal/#/leave'); await p.waitForSelector('#lv-why'); await p.fill('#lv-why', 'Fever, doctor advised rest'); await p.click('button:has-text("Apply for leave")'); await p.waitForSelector('td:has-text("Pending")'); ok(true, 'student applies for leave'); await ctx.close();
+  ({ ctx, p } = await newPage(b)); await login(p, 'hod@demo.local'); await p.goto(BASE + '/portal/#/leaves'); await p.waitForSelector('tbody tr:has-text("21-ECO-001")'); await p.click('tbody tr:has-text("21-ECO-001") button:has-text("Approve")'); await p.click('dialog .btn.primary'); await p.waitForSelector('text=No requests here', { timeout: 15000 }); ok(true, 'HOD approves the leave'); await ctx.close();
+
   /* ---------- Urdu, RTL, mobile ---------- */
   ({ ctx, p } = await newPage(b, { viewport: { width: 375, height: 760 }, isMobile: true, hasTouch: true }));
   await p.goto(BASE + '/portal/'); await p.evaluate(() => localStorage.setItem('gmc-lang', 'ur')); await login(p, '21-ECO-002');

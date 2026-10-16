@@ -2,6 +2,10 @@
 
 Phase: 0 = bana hua, 1 = pilot, 2 = department, 3 = college, 4 = baad mein. Effort (mera andaza, sirf kaam ka): S ~1 din, M ~2-4 din, L ~1-2 hafte. Flags: **ext** = bahar ka account/paisa/ijazat, **risk** = privacy/legal ihtiyat, **skip** = mera mashwara mat banao.
 
+## Ab tak bana (server tests 45/45, browser test pass)
+Marks + HOD approval + GPA/CGPA + transcript, fees (manual verification + bank CSV import), leave, scoped admin roles (accounts officer, exam cell). Parents: abhi nahi. Android app: abhi nahi (browser install).
+Grade table: default sirf shuruaati hai, University of Gujrat ka official table Admin > Settings mein daalna zaroori hai.
+
 ## Faislay jo aap ko karne hain
 1. **Pilot kitna bara?** Sirf BS ECO 5th (1 section) ya pura department? Mera mashwara: pehle 1 section, 2-4 hafte.
 2. **Fees ka tareeqa** Pehle manual verification (challan + accounts upload), ya seedha 1Bill/bank integration? Integration ke liye bank/aggregator se baat karni paray gi.

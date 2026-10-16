@@ -38,7 +38,7 @@ route('/courses', ['teacher', 'hod', 'admin'], async () => {
   return out;
 });
 
-route('/course/:id', ['teacher', 'hod', 'admin'], async id => {
+route('/course/:id', ['teacher', 'hod', 'admin'], async (id, q) => {
   const [s, sum] = await Promise.all([api('GET', `/api/offerings/${id}/sessions`), api('GET', `/api/offerings/${id}/summary`)]);
   const canEdit = P.user.role === 'teacher' || P.user.role === 'admin';
   const o = sum.offering;
@@ -59,9 +59,9 @@ route('/course/:id', ['teacher', 'hod', 'admin'], async id => {
     { label: t('attendanceRate'), render: r => h('span', { class: 'nowrap' }, pctTxt(r.pct), ' ', statusBadge(r.status)) },
     { label: t('outlookLbl'), render: r => outTxt(r.outlook) || '—' },
     { label: '', render: r => { const w = r.status === 'bad' ? waLink(r.phone, tf('waText', { name: r.name, course: o.course_code, pct: pctTxt(r.pct), min: num(o.min) })) : null; return w ? h('a', { href: w, target: '_blank', rel: 'noopener', class: 'btn ghost sm' }, t('whatsapp')) : null; } }], rows: sum.items });
-  const show = k => { [...tabs.children].forEach(b => b.classList.toggle('on', b.dataset.k === k)); panel.replaceChildren(k === 'l' ? lectures() : summary()); };
-  [['l', t('lectures')], ['s', t('students_')]].forEach(([k, l]) => tabs.append(h('button', { 'data-k': k, role: 'tab', onclick: () => show(k) }, l)));
-  out.append(tabs, panel); show('l'); return out;
+  const show = k => { try { history.replaceState(null, '', `#/course/${id}?tab=${k}`); } catch { /* ignore */ } [...tabs.children].forEach(b => b.classList.toggle('on', b.dataset.k === k)); panel.replaceChildren(k === 'l' ? lectures() : k === 'm' ? marksPanel(id, P.user) : summary()); };
+  [['l', t('lectures')], ['s', t('students_')], ['m', t('marks')]].forEach(([k, l]) => tabs.append(h('button', { 'data-k': k, role: 'tab', onclick: () => show(k) }, l)));
+  out.append(tabs, panel); show(['l', 's', 'm'].includes(q.get('tab')) ? q.get('tab') : 'l'); return out;
 });
 
 /* ---------- roster marking ---------- */
@@ -79,7 +79,7 @@ route('/lecture/:id', ['teacher', 'hod', 'admin'], async id => {
   const set = (sid, s) => { marks.set(sid, s); dirty.add(sid); paint(sid); updCount(); };
   const SEG = [['P', 'present'], ['A', 'absent'], ['L', 'leave'], ['T', 'late']];
   const list = h('ul', { class: 'roster' }, d.roster.map(r => {
-    const li = h('li', { 'data-roll': r.roll }, h('div', { class: 'who' }, h('b', {}, r.roll), ' ', h('span', {}, r.name), r.method === 'code' ? h('em', { class: 'sub' }, ' · code') : null),
+    const li = h('li', { 'data-roll': r.roll }, h('div', { class: 'who' }, h('b', {}, r.roll), ' ', h('span', {}, r.name), r.method === 'code' ? h('em', { class: 'sub' }, ' · code') : null, r.on_leave ? h('em', { class: 'sub' }, ' · ' + t('onLeave')) : null),
       canEdit ? h('div', { class: 'seg', role: 'group', 'aria-label': r.name }, SEG.map(([k, lbl]) => h('button', { type: 'button', 'data-s': k, class: 'seg-btn ' + k, 'aria-pressed': 'false', 'aria-label': t(lbl), title: t(lbl), onclick: () => set(r.id, k) }, k))) : statusBadgeSimple(r.status));
     rows.set(r.id, li); return li;
   }));
