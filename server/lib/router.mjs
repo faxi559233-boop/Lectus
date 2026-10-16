@@ -46,6 +46,8 @@ export class Router {
         if (!ctx.user) throw new HttpError(401, 'unauthenticated', 'Please log in');
         if (ctx.user.must_change && !route.opts.allowMustChange) throw new HttpError(403, 'must_change_password', 'Change your password first');
         if (Array.isArray(route.opts.auth) && !route.opts.auth.includes(ctx.user.role)) throw new HttpError(403, 'forbidden', 'Your role cannot do this');
+        // scoped admins (e.g. an accounts officer with perms='fees') may only use routes that declare a matching `perm`, or are marked `shared`
+        if (Array.isArray(route.opts.auth) && ctx.user.role === 'admin' && ctx.user.perms !== 'all' && !route.opts.shared && !(route.opts.perm && ctx.user.perms.split(',').includes(route.opts.perm))) throw new HttpError(403, 'forbidden', 'Your account is limited to: ' + ctx.user.perms);
       }
       const out = await route.handler(ctx);
       status = ctx.status || 200;

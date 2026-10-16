@@ -5,7 +5,7 @@ import { config } from '../config.mjs';
 
 const ipFails = new Limiter(100, 10 * 60e3);      // failed logins per IP (generous: a campus shares one public IP)
 setInterval(() => ipFails.sweep(), 60e3).unref();
-const publicUser = u => ({ id: u.id, email: u.email, name: u.name, role: u.role, dept_id: u.dept_id ?? null, must_change: !!u.must_change });
+const publicUser = u => ({ id: u.id, email: u.email, name: u.name, role: u.role, dept_id: u.dept_id ?? null, perms: u.perms || 'all', must_change: !!u.must_change });
 
 export default function (r, db) {
   r.post('/api/auth/login', { auth: false }, ctx => withAuthSlot(async () => {

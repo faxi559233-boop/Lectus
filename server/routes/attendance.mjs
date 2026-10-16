@@ -33,8 +33,10 @@ export default function (r, db) {
   });
   r.get('/api/sessions/:id', VIEW, ctx => {
     const s = loadSession(db, v.int(ctx.params.id, 'id', { min: 1 })), o = loadOffering(db, s.offering_id); needView(ctx.user, o);
-    const roster = db.prepare(`SELECT st.id, st.roll, st.name, a.status, a.method FROM enrollments e JOIN students st ON st.id=e.student_id
-      LEFT JOIN attendance a ON a.session_id=? AND a.student_id=st.id WHERE e.offering_id=? AND st.status='active' ORDER BY st.roll`).all(s.id, o.id);
+    const roster = db.prepare(`SELECT st.id, st.roll, st.name, a.status, a.method,
+        EXISTS(SELECT 1 FROM leaves l WHERE l.student_id=st.id AND l.status='approved' AND l.from_date<=? AND l.to_date>=?) AS on_leave
+      FROM enrollments e JOIN students st ON st.id=e.student_id
+      LEFT JOIN attendance a ON a.session_id=? AND a.student_id=st.id WHERE e.offering_id=? AND st.status='active' ORDER BY st.roll`).all(s.date, s.date, s.id, o.id).map(x => ({ ...x, on_leave: !!x.on_leave }));
     return { session: { id: s.id, offering_id: o.id, date: s.date, topic: s.topic, checkin_open: s.code_until > now(), checkin_until: s.code_until || null, geo: s.geo_lat != null }, offering: { id: o.id, course_code: o.course_code, course_name: o.course_name, section_name: o.section_name }, roster };
   });
   r.put('/api/sessions/:id', TEACH, ctx => {

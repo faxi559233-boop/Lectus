@@ -3,7 +3,7 @@ import { audit } from '../lib/audit.mjs';
 import { tx } from '../db.mjs';
 import { publicKey } from '../lib/push.mjs';
 
-const ANY = { auth: ['admin', 'hod', 'teacher', 'student'] };
+const ANY = { auth: ['admin', 'hod', 'teacher', 'student'], shared: true };
 export default function (r, db) {
   r.get('/api/push/key', ANY, () => ({ key: publicKey() }));
   r.post('/api/push/subscribe', ANY, ctx => {

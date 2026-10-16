@@ -72,7 +72,8 @@ export default function (r, db) {
   }
 
   /* ---------- users ---------- */
-  const userCols = 'id,email,name,role,dept_id,phone,active,must_change,last_login,created_at';
+  const userCols = 'id,email,name,role,dept_id,phone,active,must_change,last_login,created_at,perms';
+  const PERMS = ['all', 'fees', 'exams', 'fees,exams'];
   r.get('/api/admin/users', ADMIN, ctx => {
     const lim = Math.min(+ctx.query.limit || 100, 500), off = Math.max(+ctx.query.offset || 0, 0), where = [], args = [];
     if (ctx.query.role) { where.push('role=?'); args.push(v.oneOf(ctx.query.role, 'role', ['admin', 'hod', 'teacher', 'student'])); }
@@ -85,7 +86,8 @@ export default function (r, db) {
     const dept = v.int(b.dept_id, 'dept_id', { min: 1, optional: true }), phone = v.phone(b.phone);
     let pw = b.password, generated = false; if (!pw) { pw = generatePassword(); generated = true; } else checkPasswordPolicy(pw, email);
     const hash = await hashPassword(pw, { generated });
-    try { const res = db.prepare('INSERT INTO users(email,name,role,pw_hash,must_change,dept_id,phone,created_at) VALUES (?,?,?,?,1,?,?,?)').run(email, name, role, hash, dept, phone, now()); return { id: Number(res.lastInsertRowid), email, name, role, password: pw, generated }; }
+    const perms = role === 'admin' ? v.oneOf(b.perms ?? 'all', 'perms', PERMS) : 'all';
+    try { const res = db.prepare('INSERT INTO users(email,name,role,pw_hash,must_change,dept_id,phone,created_at,perms) VALUES (?,?,?,?,1,?,?,?,?)').run(email, name, role, hash, dept, phone, now(), perms); return { id: Number(res.lastInsertRowid), email, name, role, password: pw, generated }; }
     catch (e) { throw dbErr(e); }
   };
   r.post('/api/admin/users', ADMIN, async ctx => {
@@ -113,10 +115,11 @@ export default function (r, db) {
     if ('role' in b) { if (id === ctx.user.id) throw bad('self_role', 'You cannot change your own role'); sets.push('role=?'); vals.push(v.oneOf(b.role, 'role', ['admin', 'hod', 'teacher', 'student'])); }
     if ('dept_id' in b) { sets.push('dept_id=?'); vals.push(v.int(b.dept_id, 'dept_id', { min: 1, optional: true })); }
     if ('phone' in b) { sets.push('phone=?'); vals.push(v.phone(b.phone)); }
+    if ('perms' in b) { if (id === ctx.user.id) throw bad('self_perms', 'You cannot change your own permissions'); if (u.role !== 'admin') throw bad('perms_admin_only', 'Only admin accounts have permissions'); sets.push('perms=?'); vals.push(v.oneOf(b.perms, 'perms', PERMS)); }
     if ('active' in b) { if (id === ctx.user.id) throw bad('self_deactivate', 'You cannot deactivate yourself'); sets.push('active=?'); vals.push(b.active ? 1 : 0); }
     if (!sets.length) throw bad('nothing_to_update', 'No fields to update');
     try { db.prepare(`UPDATE users SET ${sets.join(',')} WHERE id=?`).run(...vals, id); } catch (e) { throw dbErr(e); }
-    if ('active' in b && !b.active) destroyAllSessions(db, id);
+    if (('active' in b && !b.active) || 'perms' in b) destroyAllSessions(db, id);
     if ('role' in b) destroyAllSessions(db, id);
     audit(db, ctx.user, 'users.update', 'user', id, b, ctx.ip);
     return db.prepare(`SELECT ${userCols} FROM users WHERE id=?`).get(id);

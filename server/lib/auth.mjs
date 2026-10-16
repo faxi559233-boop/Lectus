@@ -69,7 +69,7 @@ export function authenticate(db, req) {
   const last = Math.max(row ? row.last_seen : 0, seen.get(h) || 0);
   if (!row || !row.active || row.expires_at < t || last < t - config.sessionIdleMs) return null;
   if (t - last > 60000) seen.set(h, t);
-  return { id: row.id, email: row.email, name: row.name, role: row.role, dept_id: row.dept_id, must_change: !!row.must_change, tokenHash: h };
+  return { id: row.id, email: row.email, name: row.name, role: row.role, dept_id: row.dept_id, must_change: !!row.must_change, perms: row.perms || 'all', tokenHash: h };
 }
 export const destroySession = (db, tokenHash) => db.prepare('DELETE FROM auth_sessions WHERE token_hash=?').run(tokenHash);
 export const destroyAllSessions = (db, userId) => db.prepare('DELETE FROM auth_sessions WHERE user_id=?').run(userId);

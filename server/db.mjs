@@ -93,7 +93,44 @@ CREATE TABLE stats(
   P INTEGER NOT NULL DEFAULT 0, A INTEGER NOT NULL DEFAULT 0, L INTEGER NOT NULL DEFAULT 0, T INTEGER NOT NULL DEFAULT 0, total INTEGER NOT NULL DEFAULT 0,
   PRIMARY KEY(offering_id, student_id)) WITHOUT ROWID;
 CREATE INDEX stats_student ON stats(student_id);
-${STATS_TRIGGERS}${STATS_BACKFILL}`];
+${STATS_TRIGGERS}${STATS_BACKFILL}`,`
+-- marks, results, fees, leave, scoped admin permissions
+ALTER TABLE users ADD COLUMN perms TEXT NOT NULL DEFAULT 'all';
+CREATE TABLE components(
+  id INTEGER PRIMARY KEY, offering_id INTEGER NOT NULL REFERENCES offerings(id) ON DELETE CASCADE, name TEXT NOT NULL,
+  max_marks REAL NOT NULL CHECK(max_marks > 0), weight REAL NOT NULL CHECK(weight > 0 AND weight <= 100), pos INTEGER NOT NULL DEFAULT 0, UNIQUE(offering_id, name));
+CREATE TABLE marks(
+  component_id INTEGER NOT NULL REFERENCES components(id) ON DELETE CASCADE, student_id INTEGER NOT NULL REFERENCES students(id) ON DELETE CASCADE,
+  obtained REAL, absent INTEGER NOT NULL DEFAULT 0, updated_by INTEGER, updated_at INTEGER NOT NULL, PRIMARY KEY(component_id, student_id)) WITHOUT ROWID;
+CREATE INDEX marks_student ON marks(student_id);
+CREATE TABLE result_state(
+  offering_id INTEGER PRIMARY KEY REFERENCES offerings(id) ON DELETE CASCADE, status TEXT NOT NULL DEFAULT 'draft' CHECK(status IN ('draft','submitted','approved')),
+  submitted_at INTEGER, approved_by INTEGER, approved_at INTEGER, note TEXT);
+CREATE TABLE results(
+  offering_id INTEGER NOT NULL REFERENCES offerings(id) ON DELETE CASCADE, student_id INTEGER NOT NULL REFERENCES students(id) ON DELETE CASCADE,
+  total REAL NOT NULL, grade TEXT, gp REAL, credits INTEGER NOT NULL DEFAULT 0, eligible INTEGER NOT NULL DEFAULT 1, PRIMARY KEY(offering_id, student_id)) WITHOUT ROWID;
+CREATE INDEX results_student ON results(student_id);
+CREATE TABLE fee_plans(id INTEGER PRIMARY KEY, name TEXT NOT NULL UNIQUE, term_id INTEGER REFERENCES terms(id), program_id INTEGER REFERENCES programs(id), due_days INTEGER NOT NULL DEFAULT 30, active INTEGER NOT NULL DEFAULT 1);
+CREATE TABLE fee_plan_items(plan_id INTEGER NOT NULL REFERENCES fee_plans(id) ON DELETE CASCADE, head TEXT NOT NULL, amount INTEGER NOT NULL CHECK(amount >= 0), PRIMARY KEY(plan_id, head)) WITHOUT ROWID;
+CREATE TABLE vouchers(
+  id INTEGER PRIMARY KEY, number TEXT NOT NULL UNIQUE, student_id INTEGER NOT NULL REFERENCES students(id), plan_id INTEGER REFERENCES fee_plans(id), title TEXT NOT NULL,
+  gross INTEGER NOT NULL CHECK(gross >= 0), discount INTEGER NOT NULL DEFAULT 0, fine INTEGER NOT NULL DEFAULT 0, due_date TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'open' CHECK(status IN ('open','void')), created_by INTEGER, created_at INTEGER NOT NULL, note TEXT);
+CREATE INDEX vouch_student ON vouchers(student_id);
+CREATE INDEX vouch_due ON vouchers(due_date) WHERE status = 'open';
+CREATE UNIQUE INDEX vouch_plan_student ON vouchers(plan_id, student_id) WHERE plan_id IS NOT NULL AND status = 'open';
+CREATE TABLE voucher_items(voucher_id INTEGER NOT NULL REFERENCES vouchers(id) ON DELETE CASCADE, head TEXT NOT NULL, amount INTEGER NOT NULL CHECK(amount >= 0), PRIMARY KEY(voucher_id, head)) WITHOUT ROWID;
+CREATE TABLE payments(
+  id INTEGER PRIMARY KEY, voucher_id INTEGER NOT NULL REFERENCES vouchers(id), amount INTEGER NOT NULL CHECK(amount > 0), method TEXT NOT NULL CHECK(method IN ('cash','bank','online','other')),
+  reference TEXT, paid_on TEXT NOT NULL, recorded_by INTEGER, recorded_at INTEGER NOT NULL, note TEXT, reversed_at INTEGER, reversed_reason TEXT, UNIQUE(method, reference));
+CREATE INDEX pay_voucher ON payments(voucher_id);
+CREATE INDEX pay_date ON payments(paid_on);
+CREATE TABLE leaves(
+  id INTEGER PRIMARY KEY, student_id INTEGER NOT NULL REFERENCES students(id) ON DELETE CASCADE, from_date TEXT NOT NULL, to_date TEXT NOT NULL, reason TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending','approved','rejected','cancelled')), decided_by INTEGER, decided_at INTEGER, decision_note TEXT, created_at INTEGER NOT NULL);
+CREATE INDEX leave_student ON leaves(student_id, from_date);
+CREATE INDEX leave_status ON leaves(status, from_date);
+`];
 
 export function openDb(file) {
   if (!file) { mkdirSync(config.dataDir, { recursive: true, mode: 0o700 }); file = join(config.dataDir, 'gmc.db'); }
