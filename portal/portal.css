@@ -51,3 +51,5 @@
 #printarea { display: none; }
 @media print { body.printing-one > :not(#printarea) { display: none !important; } body.printing-one #printarea { display: block !important; padding: 16px; } .noprint { display: none !important; } .voucher { box-shadow: none; border: 1px solid #999; } }
 @media print { .shell .content { padding: 0; } }
+.tt li { display: grid; grid-template-columns: 110px 1fr; gap: 2px 12px; align-items: baseline; } .tt li .sub { grid-column: 2; }
+@media (max-width: 560px) { .tt li { grid-template-columns: 1fr; } .tt li .sub { grid-column: 1; } }

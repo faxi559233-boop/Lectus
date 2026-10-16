@@ -26,7 +26,9 @@ export function enrollSection(db, sectionId) {
 export function syncStudent(db, studentId) {
   const s = db.prepare('SELECT section_id, status FROM students WHERE id=?').get(studentId); if (!s) return;
   if (s.section_id == null || s.status !== 'active') { db.prepare('DELETE FROM enrollments WHERE student_id=?').run(studentId); return; }
-  db.prepare('DELETE FROM enrollments WHERE student_id=? AND offering_id NOT IN (SELECT id FROM offerings WHERE section_id=?)').run(studentId, s.section_id);
+  // only offerings of the same term are pruned: enrollments from earlier terms stay so old rosters, marks sheets and results keep their students
+  db.prepare(`DELETE FROM enrollments WHERE student_id=? AND offering_id NOT IN (SELECT id FROM offerings WHERE section_id=?)
+    AND offering_id IN (SELECT o.id FROM offerings o JOIN sections sc ON sc.id=o.section_id WHERE sc.term_id=(SELECT term_id FROM sections WHERE id=?))`).run(studentId, s.section_id, s.section_id);
   enrollSection(db, s.section_id);
 }
 
@@ -39,7 +41,7 @@ const SPECS = [
   { path: 'courses', table: 'courses', order: 'code', fields: { dept_id: x => v.int(x, 'dept_id', { min: 1 }), code: x => code(x, 'code'), name: x => v.str(x, 'name', { min: 2, max: 120 }), credits: x => v.int(x, 'credits', { min: 0, max: 20, optional: true }) } },
   { path: 'offerings', table: 'offerings', order: 'id DESC', after: (db, id, row) => enrollSection(db, row.section_id),
     fields: { course_id: x => v.int(x, 'course_id', { min: 1 }), section_id: x => v.int(x, 'section_id', { min: 1 }), teacher_id: x => v.int(x, 'teacher_id', { min: 1, optional: true }), min_pct: x => v.int(x, 'min_pct', { min: 1, max: 99, optional: true }),
-      room: x => v.str(x, 'room', { max: 40, optional: true }), days: x => v.str(x, 'days', { max: 20, optional: true, re: /^[0-6](,[0-6])*$/ }), start_time: x => v.str(x, 'start_time', { max: 5, optional: true, re: /^([01]\d|2[0-3]):[0-5]\d$/ }) },
+      room: x => v.str(x, 'room', { max: 40, optional: true }), days: x => v.str(x, 'days', { max: 20, optional: true, re: /^[0-6](,[0-6])*$/ }), start_time: x => v.str(x, 'start_time', { max: 5, optional: true, re: /^([01]\d|2[0-3]):[0-5]\d$/ }), duration_min: x => (x === undefined || x === null || x === '' ? 60 : v.int(x, 'duration_min', { min: 15, max: 300 })) },
     listSql: `SELECT o.*, c.code AS course_code, c.name AS course_name, c.dept_id, sec.name AS section_name, sec.term_id, p.code AS program_code, u.name AS teacher_name,
       (SELECT COUNT(*) FROM enrollments e WHERE e.offering_id=o.id) AS enrolled
       FROM offerings o JOIN courses c ON c.id=o.course_id JOIN sections sec ON sec.id=o.section_id JOIN programs p ON p.id=sec.program_id LEFT JOIN users u ON u.id=o.teacher_id ORDER BY o.id DESC` },

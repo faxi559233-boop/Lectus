@@ -45,10 +45,10 @@ const HOME = { student: '/me', teacher: '/courses', hod: '/dept', admin: '/admin
 const has = (u, perm) => u.role === 'admin' && (u.perms === 'all' || String(u.perms || '').split(',').includes(perm));
 const homeOf = u => (u.role === 'admin' && u.perms !== 'all' ? (has(u, 'fees') ? '/admin/fees' : '/courses') : HOME[u.role]);
 const NAV = {
-  student: [['/me', 'dashboard', 'nHome'], ['/results', 'cap', 'nResults'], ['/fees', 'database', 'nFees'], ['/leave', 'calendar', 'nLeave'], ['/inbox', 'message', 'nInbox']],
-  teacher: [['/courses', 'attendance', 'nCourses'], ['/inbox', 'message', 'nInbox']],
-  hod: [['/dept', 'chart', 'nDept'], ['/courses', 'attendance', 'nAllCourses'], ['/leaves', 'calendar', 'nLeaves'], ['/inbox', 'message', 'nInbox']],
-  admin: [['/admin', 'dashboard', 'nOverview'], ['/admin/structure', 'building', 'nStructure'], ['/admin/students', 'users', 'nStudents'], ['/admin/users', 'user', 'nUsers'], ['/courses', 'attendance', 'nAllCourses'], ['/dept', 'chart', 'nDept'], ['/admin/fees', 'database', 'nFees'], ['/leaves', 'calendar', 'nLeaves'], ['/admin/audit', 'archive', 'nAudit'], ['/admin/settings', 'settings', 'nSettings']]
+  student: [['/me', 'dashboard', 'nHome'], ['/timetable', 'clock', 'nTimetable'], ['/results', 'cap', 'nResults'], ['/fees', 'database', 'nFees'], ['/leave', 'calendar', 'nLeave'], ['/inbox', 'message', 'nInbox']],
+  teacher: [['/courses', 'attendance', 'nCourses'], ['/timetable', 'clock', 'nTimetable'], ['/inbox', 'message', 'nInbox']],
+  hod: [['/dept', 'chart', 'nDept'], ['/courses', 'attendance', 'nAllCourses'], ['/timetable', 'clock', 'nTimetable'], ['/leaves', 'calendar', 'nLeaves'], ['/inbox', 'message', 'nInbox']],
+  admin: [['/admin', 'dashboard', 'nOverview'], ['/admin/structure', 'building', 'nStructure'], ['/admin/students', 'users', 'nStudents'], ['/admin/users', 'user', 'nUsers'], ['/courses', 'attendance', 'nAllCourses'], ['/dept', 'chart', 'nDept'], ['/admin/fees', 'database', 'nFees'], ['/leaves', 'calendar', 'nLeaves'], ['/timetable', 'clock', 'nTimetable'], ['/admin/audit', 'archive', 'nAudit'], ['/admin/settings', 'settings', 'nSettings']]
 };
 const navFor = u => (u.role === 'admin' && u.perms !== 'all'
   ? [...(has(u, 'fees') ? [['/admin/fees', 'database', 'nFees']] : []), ...(has(u, 'exams') ? [['/courses', 'attendance', 'nAllCourses'], ['/admin/settings', 'settings', 'nSettings']] : []), ['/inbox', 'message', 'nInbox']]
@@ -77,7 +77,7 @@ function userMenu() {
   const d = sheetDialog(P.user.name, h('div', {},
     h('p', { class: 'sub' }, `${t('signedInAs')} ${P.user.email}`),
     h('div', { class: 'pill-row' }, h('span', {}, t('language') + ':'), ...[['en', 'English'], ['ur', 'اردو']].map(([c, l]) => btn(l, { v: P.lang === c ? 'primary' : 'secondary', size: 'sm', onclick: () => { P.lang = c; try { localStorage.setItem('gmc-lang', c); } catch { /* ignore */ } d.close(); render(); } }))),
-    h('div', { class: 'pill-row' }, btn(t('enablePush'), { icon: 'message', onclick: () => enablePush(d) })),
+    h('div', { class: 'pill-row' }, btn(t('enablePush'), { icon: 'message', onclick: () => enablePush(d) }), btn(t('twoStep'), { icon: 'check', onclick: () => { d.close(); twoStepDialog(); } }), btn(t('mySessions'), { icon: 'user', onclick: () => { d.close(); sessionsDialog(); } })),
     h('div', { class: 'pill-row' }, btn(t('signOut'), { v: 'danger-ghost', onclick: async () => { try { await api('POST', '/api/auth/logout', {}); } catch { /* ignore */ } P.user = null; d.close(); location.hash = '#/'; render(); } }))));
 }
 
@@ -86,14 +86,18 @@ function loginView() {
   const err = h('p', { class: 'field-error', role: 'alert' }, P.loginMsg); P.loginMsg = '';
   const id = h('input', { class: 'input', id: 'login-id', name: 'id', autocomplete: 'username', autocapitalize: 'none', required: true, placeholder: t('loginId') });
   const pw = h('input', { class: 'input', id: 'login-pw', name: 'pw', type: 'password', autocomplete: 'current-password', required: true });
+  const code = h('input', { class: 'input', id: 'login-code', name: 'code', inputmode: 'text', autocomplete: 'one-time-code', maxlength: 12, placeholder: '123456' });
+  const codeRow = h('div', { class: 'field', hidden: true }, h('label', { for: 'login-code' }, t('authCode')), code);
   const sub = btn(t('signIn'), { v: 'primary', type: 'submit' });
   const form = h('form', { novalidate: true, onsubmit: async e => {
     e.preventDefault(); err.textContent = ''; if (!id.value.trim() || !pw.value) { err.textContent = t('errRequired'); return; }
     sub.disabled = true;
-    try { const r = await apiPatient('POST', '/api/auth/login', { email: id.value.trim(), password: pw.value }); P.user = r.user; if (!r.user.must_change) location.hash = '#' + homeOf(r.user); await refreshUnread(); render(); }
+    try { const r = await apiPatient('POST', '/api/auth/login', { email: id.value.trim(), password: pw.value, code: code.value.trim() || undefined });
+      if (r.need_2fa) { codeRow.hidden = false; code.required = true; code.focus(); sub.disabled = false; err.textContent = t('enterAuthCode'); return; }
+      P.user = r.user; if (!r.user.must_change) location.hash = '#' + homeOf(r.user); await refreshUnread(); render(); }
     catch (ex) { err.textContent = ex.message; sub.disabled = false; pw.value = ''; pw.focus(); }
   } },
-    h('div', { class: 'field' }, h('label', { for: 'login-id' }, t('loginId')), id), h('div', { class: 'field' }, h('label', { for: 'login-pw' }, t('password')), pw), err, h('p', { class: 'help', style: 'margin-bottom:12px' }, t('loginHint')), sub);
+    h('div', { class: 'field' }, h('label', { for: 'login-id' }, t('loginId')), id), h('div', { class: 'field' }, h('label', { for: 'login-pw' }, t('password')), pw), codeRow, err, h('p', { class: 'help', style: 'margin-bottom:12px' }, t('loginHint')), sub);
   return h('main', { class: 'login-wrap' }, h('div', { class: 'card login-card' }, h('div', { class: 'brandrow' }, h('img', { class: 'logo', src: '/icons/logo.jpg', alt: '' }), h('div', {}, h('h1', {}, t('pTitle')), h('p', { class: 'sub' }, t('signIn')))), form,
     h('div', { class: 'pill-row', style: 'margin-top:14px;justify-content:center' }, ...[['en', 'English'], ['ur', 'اردو']].map(([c, l]) => btn(l, { v: P.lang === c ? 'secondary' : 'ghost', size: 'sm', onclick: () => { P.lang = c; try { localStorage.setItem('gmc-lang', c); } catch { /* ignore */ } render(); } })))));
 }

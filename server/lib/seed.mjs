@@ -15,7 +15,7 @@ export async function seedDemo(db, { students = 60, password = 'demo-Password-12
   const teachers = [1, 2, 3].map(i => U(`teacher${i}@demo.local`, `Teacher ${i}`, 'teacher', dept));
   const courses = ['ECO501 Micro Economics', 'ECO502 Macro Economics', 'ECO503 Statistics', 'ECO504 Econometrics', 'ECO505 Public Finance', 'ECO506 Development Economics']
     .map(s => Number(db.prepare('INSERT INTO courses(dept_id,code,name,credits) VALUES (?,?,?,3)').run(dept, s.slice(0, 6), s.slice(7)).lastInsertRowid));
-  const offerings = []; courses.forEach((c, i) => secs.forEach(s => offerings.push(Number(db.prepare('INSERT INTO offerings(course_id,section_id,teacher_id,room,days,start_time) VALUES (?,?,?,?,?,?)').run(c, s, teachers[i % 3], 'R' + (i + 1), '1,3', '09:00').lastInsertRowid))));
+  const offerings = []; courses.forEach((c, i) => secs.forEach(s => offerings.push(Number(db.prepare('INSERT INTO offerings(course_id,section_id,teacher_id,room,days,start_time) VALUES (?,?,?,?,?,?)').run(c, s, teachers[i % 3], 'R' + (i + 1), '1,3', String(8 + i).padStart(2, '0') + ':00').lastInsertRowid))));
   const studentIds = [];
   for (let i = 0; i < students; i++) {
     const roll = `21-ECO-${String(i + 1).padStart(3, '0')}`, uid = Number(db.prepare("INSERT INTO users(email,name,role,pw_hash,must_change,created_at) VALUES (?,?,'student',?,0,?)").run(`${roll.toLowerCase()}@student.local`, `Student ${i + 1}`, hash, t).lastInsertRowid);

@@ -2,10 +2,6 @@
 
 Phase: 0 = bana hua, 1 = pilot, 2 = department, 3 = college, 4 = baad mein. Effort (mera andaza, sirf kaam ka): S ~1 din, M ~2-4 din, L ~1-2 hafte. Flags: **ext** = bahar ka account/paisa/ijazat, **risk** = privacy/legal ihtiyat, **skip** = mera mashwara mat banao.
 
-## Ab tak bana (server tests 45/45, browser test pass)
-Marks + HOD approval + GPA/CGPA + transcript, fees (manual verification + bank CSV import), leave, scoped admin roles (accounts officer, exam cell). Parents: abhi nahi. Android app: abhi nahi (browser install).
-Grade table: default sirf shuruaati hai, University of Gujrat ka official table Admin > Settings mein daalna zaroori hai.
-
 ## Faislay jo aap ko karne hain
 1. **Pilot kitna bara?** Sirf BS ECO 5th (1 section) ya pura department? Mera mashwara: pehle 1 section, 2-4 hafte.
 2. **Fees ka tareeqa** Pehle manual verification (challan + accounts upload), ya seedha 1Bill/bank integration? Integration ke liye bank/aggregator se baat karni paray gi.
@@ -23,11 +19,11 @@ Ye module sab se pehle pakka hona chahiye. Baqi sab is par khara hai.
 | ATT-03 | Location (geofence) check | Code sirf classroom ke andar chalta hai (teacher on kare to). | Bana hua | - |  |
 | ATT-04 | Rotating QR code (code ke saath) | Teacher ki screen par QR, student phone se scan kare. Code se tez, lekin camera permission chahiye. | Phase 2 · Department | S |  |
 | ATT-05 | Ek student = ek device (proxy rokna) | Pehle login wala device bind hota hai; doosre phone se check-in par teacher ko flag. Perfect nahi, sirf rukawat. | Phase 2 · Department | M | risk |
-| ATT-06 | Leave application + approval | Student bimari/zaroorat ki rukhsat mange, teacher/HOD approve kare, hazri mein L ban jaye. | Phase 2 · Department | M |  |
+| ATT-06 | Leave application + approval | Student leave ke liye apply karta hai, HOD approve/reject karta hai, approve par us muddat ki absent hazri leave ban jati hai. Bana hua. | Bana hua | - |  |
 | ATT-07 | Medical certificate upload | Leave ke saath document attach. Sehat ka data hai, is liye sakht access aur retention rule. | Phase 2 · Department | M | risk |
 | ATT-08 | Hazri correction request | Student kahe "meri hazri ghalat hai", teacher dekh kar theek kare, sab audit mein. | Phase 2 · Department | S |  |
 | ATT-09 | Condonation / shortage relief | College rule ke mutabiq HOD kam hazri mein riayat de sake, wajah ke saath. | Phase 3 · College | M |  |
-| ATT-10 | Auto-warning ladder (80% / 75% / 70%) | Tadriji tanbeeh: pehle nazuk, phir shortage. Student ko push + inbox. | Phase 1 · Pilot | S |  |
+| ATT-10 | Auto-warning ladder (80% / 75% / 70%) | Roz khud chalta hai: minimum ke 5 point qareeb par ek notice, minimum se neeche jane par doosra. Dobara nahi bhejta. Bana hua. | Bana hua | - |  |
 | ATT-11 | Holiday calendar + class-cancel | Chuttiyan aur cancelled lectures, hazri ke hisab se bahar. | Phase 2 · Department | M |  |
 | ATT-12 | Substitute / extra / make-up lecture | Doosra teacher cover kare ya extra class ho to record sahi rahe. | Phase 2 · Department | M |  |
 | ATT-13 | Teacher attendance & punctuality | Teacher ke lecture start/end ka record (HOD ke liye). | Phase 3 · College | M | risk |
@@ -41,8 +37,8 @@ Pakistan mein 75% hazri aam shart hai (Punjab University, Hamdard mein tasdeeq h
 | ID | Feature | Kya hai | Phase | Effort | Flag |
 |---|---|---|---|---|---|
 | ACA-01 | Departments / programs / terms / sections / courses / offerings | Poora structure. Bana hua hai. | Bana hua | - |  |
-| ACA-02 | Term rollover (semester aage barhana) | Naye semester mein students ko agle section mein promote karna, purana record archive. | Phase 2 · Department | M |  |
-| ACA-03 | Timetable builder + clash checker | Teacher, room aur section ke tasadum khud pakray. Weekly grid. | Phase 2 · Department | L |  |
+| ACA-02 | Term rollover (semester aage barhana) | Naye semester mein sections banti hain (semester +1), students move hote hain, purana record mehfooz. Aakhri semester ke baad students "left". Bana hua. | Bana hua | - |  |
+| ACA-03 | Timetable builder + clash checker | Haftawar timetable (student/teacher/HOD/admin) aur clash checker (teacher, room, section). Offerings mein din, waqt, dauraniya. Bana hua. | Bana hua | - |  |
 | ACA-04 | Room allocation & capacity | Kamray, capacity, lab. | Phase 3 · College | M |  |
 | ACA-05 | Student course registration | Student apne courses khud chune, prerequisite check, credit-hour limit. | Phase 3 · College | L |  |
 | ACA-06 | Course outline / syllabus upload | Har course ka outline aur lecture plan. | Phase 2 · Department | S |  |
@@ -54,11 +50,11 @@ Ye sab se hassas hissa hai. Pehle attendance aur announcements pakke karein, phi
 
 | ID | Feature | Kya hai | Phase | Effort | Flag |
 |---|---|---|---|---|---|
-| EXM-01 | Exam eligibility (hazri se khud) | Shortage wale students ki list auto, final se pehle HOD ko. | Phase 2 · Department | S |  |
-| EXM-02 | Assessment components & weights | Quiz/assignment/mid/final ka wazan course ke hisab se (misal: Punjab University 15/25/60, dusri universities mein alag). | Phase 3 · College | M |  |
-| EXM-03 | Marks entry (teacher) + HOD approval | Teacher marks bhare, HOD manzoor kare, lock hone ke baad tabdeeli sirf approval se. | Phase 3 · College | L | risk |
-| EXM-04 | Grade scale, GPA / CGPA | Apni university ka grade table (misal: 4-point scale). Hisab test ke saath. | Phase 3 · College | M |  |
-| EXM-05 | Result card / DMC (PDF) | Student ka result PDF, QR se verify. | Phase 3 · College | M |  |
+| EXM-01 | Exam eligibility (hazri se khud) | Marks sheet aur published result par hazri ki shart (eligible) ka nishan. Bana hua. | Bana hua | - |  |
+| EXM-02 | Assessment components & weights | Har course ke components aur unka wazan (15/25/60 ka preset, apni marzi ka bhi). Bana hua. | Bana hua | - |  |
+| EXM-03 | Marks entry (teacher) + HOD approval | Teacher marks bhare, HOD manzoor ya wapas kare, publish ke baad lock, sirf admin reason ke saath reopen. Bana hua. | Bana hua | - |  |
+| EXM-04 | Grade scale, GPA / CGPA | Grade table admin khud set kare (University of Gujrat ka official table daalna zaroori), credit-weighted GPA/CGPA. Bana hua. | Bana hua | - |  |
+| EXM-05 | Result card / DMC (PDF) | Student ka result page (print / PDF), CGPA aur GPA. QR verify abhi nahi. | Bana hua | - |  |
 | EXM-06 | Transcript | Tamam semesters ka transcript, official stamp workflow. | Baad mein | L | risk |
 | EXM-07 | Datesheet & seating plan | Paper ki tareekhein, kamra, roll number slips. | Baad mein | L |  |
 | EXM-08 | Recheck / recount request | Student recheck ki darkhwast de, fee ke saath. | Baad mein | M |  |
@@ -69,12 +65,12 @@ Pakistan mein aam tareeqa: challan banta hai aur 1Bill/KuickPay ya bank app/Jazz
 
 | ID | Feature | Kya hai | Phase | Effort | Flag |
 |---|---|---|---|---|---|
-| FEE-01 | Fee structure (program / semester ke hisab se) | Tuition, admission, exam fee, discount. | Phase 3 · College | M |  |
-| FEE-02 | Challan generation (PDF) | Student ke naam ka challan, unique number. | Phase 3 · College | M |  |
-| FEE-03 | Payment verification (manual upload / bank file) | Accounts staff bank report upload kare, ada shuda mark ho. | Phase 3 · College | M |  |
+| FEE-01 | Fee structure (program / semester ke hisab se) | Fee plan (tuition, library, ... ki muddein), semester ke hisab se. Bana hua. | Bana hua | - |  |
+| FEE-02 | Challan generation (PDF) | Numbered voucher (digits + check digit), poore section ke liye ek click mein, print. Bana hua. | Bana hua | - |  |
+| FEE-03 | Payment verification (manual upload / bank file) | Accounts staff cash/bank payment likhe ya bank statement CSV import kare (voucher number se match, dobara upload mehfooz). Bana hua. | Bana hua | - |  |
 | FEE-04 | 1Bill / KuickPay / Raast online integration | Khud ba khud payment confirm. Bank ya aggregator se agreement aur technical docs chahiye, jo maine abhi nahi dekhe. | Baad mein | L | ext |
-| FEE-05 | Installments, late fine, scholarship, refund | Qiston ka hisab aur riayat, sab audit ke saath. | Baad mein | L |  |
-| FEE-06 | Defaulters list & reminders | Baqayadar students, exam/slip se link. | Baad mein | S |  |
+| FEE-05 | Installments, late fine, scholarship, refund | Qiston (partial payment), discount/scholarship, late fine (rozana + hadd), payment reverse reason ke saath. Refund alag nahi. Bana hua. | Bana hua | - |  |
+| FEE-06 | Defaulters list & reminders | Overdue filter, baqaya raqam, CSV export. Reminder notification abhi nahi. Bana hua. | Bana hua | - |  |
 | FEE-07 | Full accounting / payroll | Poora hisaab kitab aur tankhwah. | Baad mein | L | skip |
 
 ## Admissions
@@ -158,8 +154,8 @@ Pakistan mein abhi koi mukammal data-protection qanoon nafiz nahi (research ke m
 | ID | Feature | Kya hai | Phase | Effort | Flag |
 |---|---|---|---|---|---|
 | SEC-01 | RBAC, audit log, lockout, CSRF, CSP | Bana hua hai. | Bana hua | - |  |
-| SEC-02 | 2FA (authenticator app) for admin / HOD | Admin account ki hifazat. TOTP app, koi SMS kharcha nahi. | Phase 2 · Department | M |  |
-| SEC-03 | "Sign out everywhere" + active sessions list | Chori shuda phone par session band. | Phase 2 · Department | S |  |
+| SEC-02 | 2FA (authenticator app) for admin / HOD | Authenticator app (TOTP) aur 8 backup codes, replay band. Bana hua. | Bana hua | - |  |
+| SEC-03 | "Sign out everywhere" + active sessions list | Apne devices ki list aur "baqi sab se sign out". Bana hua. | Bana hua | - |  |
 | SEC-04 | Privacy policy page + consent record | Student ko batana ke kya data, kyun, kab tak. | Phase 2 · Department | M | risk |
 | SEC-05 | Data export / delete request tool | Student ke data ki copy ya hazf ki darkhwast. | Phase 3 · College | M | risk |
 | SEC-06 | Retention rules (purana data khud mitana) | Maslan leave documents 1 saal baad. | Phase 3 · College | M | risk |

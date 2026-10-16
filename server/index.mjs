@@ -16,6 +16,8 @@ import notifyRoutes from './routes/notify.mjs';
 import resultsRoutes from './routes/results.mjs';
 import feesRoutes from './routes/fees.mjs';
 import leaveRoutes from './routes/leave.mjs';
+import academicRoutes from './routes/academic.mjs';
+import { runWarnings } from './lib/warnings.mjs';
 
 export const VERSION = '1.0.0';
 
@@ -23,7 +25,7 @@ export async function createApp({ dbFile, workers = true, pushSender } = {}) {
   const db = openDb(dbFile);
   const router = new Router(db);
   router.get('/api/health', { auth: false }, () => { db.prepare('SELECT 1').get(); return { ok: true, version: VERSION }; });
-  for (const mod of [authRoutes, adminRoutes, attendanceRoutes, studentRoutes, hodRoutes, notifyRoutes, resultsRoutes, feesRoutes, leaveRoutes]) mod(router, db);
+  for (const mod of [authRoutes, adminRoutes, attendanceRoutes, studentRoutes, hodRoutes, notifyRoutes, resultsRoutes, feesRoutes, leaveRoutes, academicRoutes]) mod(router, db);
   if (workers) await initPush();
   const server = http.createServer(async (req, res) => {
     try { if (!(await router.handle(req, res))) serveStatic(req, res); }
@@ -36,6 +38,8 @@ export async function createApp({ dbFile, workers = true, pushSender } = {}) {
     db.prepare('DELETE FROM auth_sessions WHERE expires_at<?').run(t);
     db.prepare('DELETE FROM ops WHERE ts<?').run(t - 14 * 86400e3);
     db.prepare('DELETE FROM notifications WHERE read_at IS NOT NULL AND read_at<?').run(t - 90 * 86400e3);
+    const day = new Date(t).toISOString().slice(0, 10);   // the warning ladder runs once a day
+    if (workers && db.prepare("SELECT value FROM settings WHERE key='warn_last_run'").get()?.value !== day) { try { runWarnings(db); db.prepare("INSERT INTO settings(key,value) VALUES ('warn_last_run',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value").run(day); } catch (e) { console.error('[warnings]', e.message); } }
   };
   housekeeping();
   const sweepWindows = () => db.prepare('UPDATE lecture_sessions SET code_until=0 WHERE code_until>0 AND code_until<?').run(Date.now());

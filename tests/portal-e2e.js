@@ -135,6 +135,17 @@ const text = p => p.locator('#main').innerText();
   await p.goto(BASE + '/portal/#/leave'); await p.waitForSelector('#lv-why'); await p.fill('#lv-why', 'Fever, doctor advised rest'); await p.click('button:has-text("Apply for leave")'); await p.waitForSelector('td:has-text("Pending")'); ok(true, 'student applies for leave'); await ctx.close();
   ({ ctx, p } = await newPage(b)); await login(p, 'hod@demo.local'); await p.goto(BASE + '/portal/#/leaves'); await p.waitForSelector('tbody tr:has-text("21-ECO-001")'); await p.click('tbody tr:has-text("21-ECO-001") button:has-text("Approve")'); await p.click('dialog .btn.primary'); await p.waitForSelector('text=No requests here', { timeout: 15000 }); ok(true, 'HOD approves the leave'); await ctx.close();
 
+  /* ---------- timetable, two-step login, sessions ---------- */
+  ({ ctx, p } = await newPage(b)); await login(p, '21-ECO-001'); await p.goto(BASE + '/portal/#/timetable'); await p.waitForSelector('.tt'); ok(/ECO501/.test(await text(p)), 'student sees the weekly timetable'); await ctx.close();
+  ({ ctx, p } = await newPage(b)); await login(p, 'hod@demo.local');
+  await p.click('.top-avatar-btn'); await p.click('dialog button:has-text("Two-step login")'); await p.waitForSelector('dialog .big-code');
+  const secret = (await p.locator('dialog .big-code').innerText()).trim(); ok(/^[A-Z2-7]{32}$/.test(secret), 'setup key shown');
+  const totp = require('crypto'); const otp = (sec, off = 0) => { const B32 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567'; let bits = ''; for (const c of sec) bits += B32.indexOf(c).toString(2).padStart(5, '0'); const key = Buffer.from(bits.match(/.{8}/g).map(x => parseInt(x, 2))); const ctr = Buffer.alloc(8); ctr.writeBigUInt64BE(BigInt(Math.floor(Date.now() / 30000) + off)); const h = totp.createHmac('sha1', key).update(ctr).digest(), o = h[19] & 15; return String((h.readUInt32BE(o) & 0x7fffffff) % 1000000).padStart(6, '0'); };
+  await p.fill('#f-code', otp(secret)); await p.click('dialog:last-of-type .btn.primary'); await p.waitForSelector('text=Backup codes'); ok(true, 'two-step login switched on, backup codes shown'); await ctx.close();
+  ({ ctx, p } = await newPage(b)); await p.goto(BASE + '/portal/'); await p.fill('#login-id', 'hod@demo.local'); await p.fill('#login-pw', PW); await p.click('button[type=submit]'); await p.waitForSelector('#login-code:visible'); ok(true, 'login now asks for the authenticator code');
+  await p.fill('#login-code', otp(secret, 1)); await p.click('button[type=submit]'); await p.waitForSelector('.shell'); ok(true, 'login succeeds with the code');
+  await p.click('.top-avatar-btn'); await p.click('dialog button:has-text("My devices")'); await p.waitForSelector('text=This device'); ok(true, 'sessions list opens'); await ctx.close();
+
   /* ---------- Urdu, RTL, mobile ---------- */
   ({ ctx, p } = await newPage(b, { viewport: { width: 375, height: 760 }, isMobile: true, hasTouch: true }));
   await p.goto(BASE + '/portal/'); await p.evaluate(() => localStorage.setItem('gmc-lang', 'ur')); await login(p, '21-ECO-002');

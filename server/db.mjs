@@ -130,6 +130,14 @@ CREATE TABLE leaves(
   status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending','approved','rejected','cancelled')), decided_by INTEGER, decided_at INTEGER, decision_note TEXT, created_at INTEGER NOT NULL);
 CREATE INDEX leave_student ON leaves(student_id, from_date);
 CREATE INDEX leave_status ON leaves(status, from_date);
+`,`
+-- timetable duration, two-step login, attendance warning log
+ALTER TABLE offerings ADD COLUMN duration_min INTEGER NOT NULL DEFAULT 60;
+ALTER TABLE users ADD COLUMN totp_secret TEXT;
+ALTER TABLE users ADD COLUMN totp_on INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE users ADD COLUMN totp_last INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE users ADD COLUMN backup_codes TEXT;
+CREATE TABLE warn_log(offering_id INTEGER NOT NULL, student_id INTEGER NOT NULL, level INTEGER NOT NULL, ts INTEGER NOT NULL, PRIMARY KEY(offering_id, student_id, level)) WITHOUT ROWID;
 `];
 
 export function openDb(file) {
